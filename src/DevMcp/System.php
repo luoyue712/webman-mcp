@@ -4,6 +4,7 @@ namespace Luoyue\WebmanMcp\DevMcp;
 
 use Closure;
 use Composer\InstalledVersions;
+use Throwable;
 use function config;
 use FastRoute\Dispatcher;
 use Luoyue\WebmanMcp\McpHelper;
@@ -188,7 +189,7 @@ class System
 
     #[McpTool(name: 'eval_code', description: '在当前进程中执行php代码')]
     public function evalCode(
-        #[Schema(description: 'php代码')]
+        #[Schema(description: 'php代码，注意：在代码中必须删除declare语句，如有class代码块请使用`if (!class_exists({className})){}`包裹防止重复加载类。')]
         string $code,
     ): string
     {
@@ -197,6 +198,8 @@ class System
         try {
             eval($code);
             return ob_get_contents();
+        } catch (Throwable $e) {
+            throw new ToolCallException($e->getMessage(), previous: $e);
         } finally {
             ob_end_clean();
         }

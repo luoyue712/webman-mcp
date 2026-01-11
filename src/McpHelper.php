@@ -17,7 +17,7 @@ use Workerman\Events\Swow;
 use Workerman\Timer;
 use Workerman\Worker;
 
-class McpHelper
+final class McpHelper
 {
     /**
      * 当前请求是否是mcp请求

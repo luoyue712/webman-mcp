@@ -33,10 +33,10 @@ composer require luoyue/webman-mcp:^dev-master mcp/sdk:^dev-main
 
 ### 可选依赖
 
-- webman/redis（可选）
-- Swoole/Swow/Fiber协程（可选，提升SSE性能）
-- monolog/monolog（可选，用于记录服务器日志）
-- phpunit/phpunit（可选，用于无关传输的测试）
+- webman/redis
+- webman/event（用于MCP生命周期钩子）
+- Swoole/Swow/Fiber协程（提升SSE性能）
+- monolog/monolog（用于记录服务器日志）
 
 ## 注解
 
@@ -46,8 +46,8 @@ composer require luoyue/webman-mcp:^dev-master mcp/sdk:^dev-main
 |      McpPrompt      | 标记一个PHP方法为MCP提示生成器，用于生成对话提示消息     |
 |     McpResource     | 标记一个PHP方法为MCP资源处理器，用于处理特定资源URI的请求 |
 | McpResourceTemplate | 标记一个PHP方法为MCP资源模板，用于定义资源URI模板     |
-|       Schema        | 定义方法或参数的JSON Schema，用于参数验证和类型检查   |
 | CompletionProvider  | 为参数提供自动完成功能，指定可能的值或提供者类           |
+|       Schema        | 定义方法或参数的JSON Schema，用于参数验证和类型检查   |
 
 ## 启动方式
 
@@ -247,16 +247,7 @@ class McpController
 }
 ```
 
-### 协程环境与非协程环境的限制
-
-此插件已将SDK中SSE轮询阻塞函数`usleep`替换为workerman自带的非阻塞方法`Timer::sleep()`，结果如下：
-
-- 协程环境下：阻塞部分变为非阻塞，原有业务代码不受影响。
-- 非协程环境下：相关代码依然为阻塞状态，严重影响业务代码，阻塞周期为0.1秒为单位，可使用自定义进程与webman进程分离，从而达到互不干扰。
-
-### STDIO传输和phpunit单元测试的限制
-
-STDIO传输与phpunit单元测试中具有相同的缺点：
+### STDIO传输的限制
 
 - 在linux/macos系统中此功能可能不受影响，在windows系统中，由于平台限制，无法将其设置为非阻塞。
 - 根据上面的问题，在webman中无法使用依赖workerman环境中的函数：定时器、定时任务、协程、http-client等。

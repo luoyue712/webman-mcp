@@ -4,16 +4,15 @@ namespace Luoyue\WebmanMcp;
 
 use Generator;
 use InvalidArgumentException;
+use Luoyue\WebmanMcp\Event\WebmanEvent;
 use Luoyue\WebmanMcp\Server\StreamableHttpTransport;
 use Mcp\Server;
 use Mcp\Server\Session\InMemorySessionStore;
 use Mcp\Server\Session\Psr16StoreSession;
-use Mcp\Server\Transport\CallbackStream;
 use Mcp\Server\Transport\StdioTransport;
 use Mcp\Server\Transport\TransportInterface;
 use Nyholm\Psr7\ServerRequest;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\StreamInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use function request;
@@ -110,6 +109,7 @@ final class McpServerManager
                 ->setContainer(Container::instance())
                 ->setSession($config['session'])
                 ->setLogger($config['logger']);
+            WebmanEvent::installed() && $server->setEventDispatcher(WebmanEvent::instance());
             isset($config['configure']) && is_callable($config['configure']) && ($config['configure'])($server);
 
             self::$server[$serviceName] = $server->build();

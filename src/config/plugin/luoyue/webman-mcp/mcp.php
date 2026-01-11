@@ -1,5 +1,6 @@
 <?php
 
+use Luoyue\WebmanMcp\Event\WebmanEvent;
 use Luoyue\WebmanMcp\Server\DevelopmentMcpLoader;
 use Mcp\Schema\Enum\ProtocolVersion;
 use Mcp\Schema\Icon;
@@ -33,12 +34,12 @@ return [
             // 设置需要开启的功能
             $server->setCapabilities(new ServerCapabilities(
                 tools: true,
-                toolsListChanged: false,
+                toolsListChanged: WebmanEvent::installed(),
                 resources: true,
                 resourcesSubscribe: false,
-                resourcesListChanged: false,
+                resourcesListChanged: WebmanEvent::installed(),
                 prompts: true,
-                promptsListChanged: false,
+                promptsListChanged: WebmanEvent::installed(),
                 logging: true,
                 completions: true,
                 experimental: null,
