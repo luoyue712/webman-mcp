@@ -4,7 +4,6 @@ namespace Luoyue\WebmanMcp\DevMcp;
 
 use Closure;
 use Composer\InstalledVersions;
-use Throwable;
 use function config;
 use FastRoute\Dispatcher;
 use Luoyue\WebmanMcp\McpHelper;
@@ -12,6 +11,7 @@ use Mcp\Capability\Attribute\McpTool;
 use Mcp\Capability\Attribute\Schema;
 use Mcp\Exception\ToolCallException;
 use ReflectionMethod;
+use Throwable;
 use Webman\App;
 use Webman\Console\Commands\BuildBinCommand;
 use Webman\Console\Commands\BuildPharCommand;
@@ -22,7 +22,26 @@ use Workerman\Worker;
 
 class System
 {
-    #[McpTool(name: 'system_info', description: '获取webman框架信息，php版本信息，系统信息，是否使用协程等')]
+    #[McpTool(
+        name: 'system_info',
+        description: '获取webman框架信息，php版本信息，系统信息，是否使用协程等',
+        outputSchema: [
+            'type' => 'object',
+            'properties' => [
+                'server_os' => ['type' => 'string'],
+                'server_uname' => ['type' => 'string'],
+                'php_version' => ['type' => 'string'],
+                'php_binary' => ['type' => 'string'],
+                'php_sapi_name' => ['type' => 'string'],
+                'workerman_version' => ['type' => 'string'],
+                'webman_version' => ['type' => 'string'],
+                'event_loop_class' => ['type' => 'string'],
+                'is_coroutine' => ['type' => 'boolean'],
+                'default_temp_dir' => ['type' => 'string'],
+            ],
+            'required' => ['server_os', 'server_uname', 'php_version', 'php_binary', 'php_sapi_name', 'workerman_version', 'webman_version', 'event_loop_class', 'is_coroutine', 'default_temp_dir'],
+        ]
+    )]
     public function sequentialThinking(): array
     {
         $event_loop = Worker::getEventLoop()::class;
@@ -40,7 +59,14 @@ class System
         ];
     }
 
-    #[McpTool(name: 'list_dependence', description: '获取当前项目已安装依赖列表')]
+    #[McpTool(
+        name: 'list_dependence',
+        description: '获取当前项目已安装依赖列表',
+        outputSchema: [
+            'type' => 'array',
+            'items' => ['type' => 'object'],
+        ]
+    )]
     public function listDependence(): array
     {
         return InstalledVersions::getAllRawData();
@@ -49,7 +75,14 @@ class System
     /**
      * @return string[]
      */
-    #[McpTool('list_extensions', '获取当前环境已加载的php扩展')]
+    #[McpTool(
+        name: 'list_extensions',
+        description: '获取当前环境已加载的php扩展',
+        outputSchema: [
+            'type' => 'array',
+            'items' => ['type' => 'string'],
+        ]
+    )]
     public function extensions(): array
     {
         return get_loaded_extensions();
@@ -58,7 +91,14 @@ class System
     /**
      * @return string[]
      */
-    #[McpTool(name: 'get_extension_funcs', description: '获取扩展已加载的函数')]
+    #[McpTool(
+        name: 'get_extension_funcs',
+        description: '获取扩展已加载的函数',
+        outputSchema: [
+            'type' => 'array',
+            'items' => ['type' => 'string'],
+        ]
+    )]
     public function getExtensionFuncs(
         #[Schema(description: '扩展名')]
         string $extension,
@@ -67,7 +107,13 @@ class System
         return get_extension_funcs($extension);
     }
 
-    #[McpTool(name: 'get_php_ini', description: '获取应用程序配置')]
+    #[McpTool(
+        name: 'get_php_ini',
+        description: '获取应用程序配置',
+        outputSchema: [
+            'type' => 'object',
+        ]
+    )]
     public function getPhpIni(
         #[Schema(description: '扩展名')]
         ?string $extension = null,
@@ -76,7 +122,14 @@ class System
         return ini_get_all($extension);
     }
 
-    #[McpTool(name: 'get_config', description: '获取应用程序配置')]
+    #[McpTool(
+        name: 'get_config',
+        description: '获取应用程序配置',
+        outputSchema: [
+            'type' => 'object',
+            'required' => [],
+        ]
+    )]
     public function getConfig(
         #[Schema(description: '配置文件名')]
         string $path,
@@ -85,7 +138,25 @@ class System
         return config($path);
     }
 
-    #[McpTool(name: 'list_routes', description: '获取路由列表')]
+    #[McpTool(
+        name: 'list_routes',
+        description: '获取路由列表',
+        outputSchema: [
+            'type' => 'array',
+            'items' => [
+                'type' => 'object',
+                'properties' => [
+                    'name' => ['type' => 'string'],
+                    'uri' => ['type' => 'string'],
+                    'methods' => ['type' => 'array', 'items' => ['type' => 'string']],
+                    'callback' => ['type' => 'string'],
+                    'param' => ['type' => 'object'],
+                    'middleware' => ['type' => 'string'],
+                ],
+                'required' => ['name', 'uri', 'methods', 'callback', 'param', 'middleware'],
+            ],
+        ]
+    )]
     public function listRoutes(): array
     {
         $callback = function (RouteObject $route) {
@@ -103,7 +174,33 @@ class System
         return array_map($callback, Route::getRoutes());
     }
 
-    #[McpTool(name: 'match_routes', description: '匹配url对应的路由信息')]
+    #[McpTool(
+        name: 'match_routes',
+        description: '匹配url对应的路由信息',
+        outputSchema: [
+            'type' => 'object',
+            'properties' => [
+                'plugin' => ['type' => 'string'],
+                'app' => ['type' => 'string'],
+                'controller' => ['type' => 'string'],
+                'action' => ['type' => 'string'],
+                'route' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'name' => ['type' => 'string'],
+                        'uri' => ['type' => 'string'],
+                        'methods' => ['type' => 'array', 'items' => ['type' => 'string']],
+                        'callback' => ['type' => 'string'],
+                        'param' => ['type' => 'object'],
+                        'args' => ['type' => 'array', 'items' => ['type' => 'string']],
+                        'middleware' => ['type' => 'array', 'items' => ['type' => 'string']],
+                    ],
+                    'required' => ['name', 'uri', 'methods', 'callback', 'param', 'args', 'middleware'],
+                ],
+            ],
+            'required' => ['plugin', 'app', 'controller', 'action', 'route'],
+        ]
+    )]
     public function matchRoutes(
         #[Schema(description: 'url路径，不包含域名')]
         string $path,
@@ -157,7 +254,21 @@ class System
         }
     }
 
-    #[McpTool(name: 'list_events', description: '获取事件列表')]
+    #[McpTool(
+        name: 'list_events',
+        description: '获取事件列表',
+        outputSchema: [
+            'type' => 'array',
+            'items' => [
+                'type' => 'object',
+                'properties' => [
+                    'event_name' => ['type' => 'string'],
+                    'callback' => ['type' => 'string'],
+                ],
+                'required' => ['event_name', 'callback'],
+            ],
+        ]
+    )]
     public function listEvents(): array
     {
         if (!InstalledVersions::isInstalled('webman/event')) {
@@ -178,7 +289,17 @@ class System
         return array_map($callback, Event::list());
     }
 
-    #[McpTool(name: 'get_env', description: '获取应用程序环境变量')]
+    #[McpTool(
+        name: 'get_env',
+        description: '获取应用程序环境变量',
+        outputSchema: [
+            'anyOf' => [
+                ['type' => 'object'],
+                ['type' => 'string'],
+                ['type' => 'boolean'],
+            ],
+        ]
+    )]
     public function getEnv(
         #[Schema(description: '环境变量名')]
         ?string $key = null,
@@ -187,7 +308,13 @@ class System
         return getenv($key);
     }
 
-    #[McpTool(name: 'eval_code', description: '在当前进程中执行php代码')]
+    #[McpTool(
+        name: 'eval_code',
+        description: '在当前进程中执行php代码',
+        outputSchema: [
+            'type' => 'string',
+        ]
+    )]
     public function evalCode(
         #[Schema(description: 'php代码，注意：在代码中必须删除declare语句，如有class代码块请使用`if (!class_exists({className})){}`包裹防止重复加载类。')]
         string $code,
@@ -205,7 +332,13 @@ class System
         }
     }
 
-    #[McpTool(name: 'build_phar', description: '将项目代码打包为phar文件')]
+    #[McpTool(
+        name: 'build_phar',
+        description: '将项目代码打包为phar文件',
+        outputSchema: [
+            'type' => 'string',
+        ]
+    )]
     public function buildPhar(): string
     {
         if (!class_exists(BuildPharCommand::class)) {
@@ -214,7 +347,13 @@ class System
         return McpHelper::fetch_console(BuildPharCommand::class);
     }
 
-    #[McpTool(name: 'build_bin', description: '将项目代码打包为linux二进制可执行文件')]
+    #[McpTool(
+        name: 'build_bin',
+        description: '将项目代码打包为linux二进制可执行文件',
+        outputSchema: [
+            'type' => 'string',
+        ]
+    )]
     public function buildBin(): string
     {
         if (!class_exists(BuildBinCommand::class)) {
@@ -222,5 +361,4 @@ class System
         }
         return McpHelper::fetch_console(BuildBinCommand::class);
     }
-
 }

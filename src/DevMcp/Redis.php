@@ -11,7 +11,30 @@ use Throwable;
 
 class Redis
 {
-    #[McpTool(name: 'redis_connections', description: '获取数据库连接配置信息')]
+    #[McpTool(
+        name: 'redis_connections',
+        description: '获取数据库连接配置信息',
+        outputSchema: [
+            'type' => 'object',
+            'properties' => [
+                'default' => ['type' => 'string'],
+                'connections' => [
+                    'type' => 'array',
+                    'items' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'connection_name' => ['type' => 'string'],
+                            'database' => ['type' => 'string'],
+                            'prefix' => ['type' => 'string'],
+                            'pool' => ['type' => 'object'],
+                        ],
+                        'required' => ['connection_name', 'database', 'prefix', 'pool'],
+                    ],
+                ],
+            ],
+            'required' => ['default', 'connections'],
+        ]
+    )]
     public function databaseConnections(): array
     {
         $this->checkInstallRedis();
@@ -29,7 +52,18 @@ class Redis
         ];
     }
 
-    #[McpTool(name: 'redis_execute_raw', description: '执行原始Redis命令')]
+    #[McpTool(
+        name: 'redis_execute_raw',
+        description: '执行原始Redis命令',
+        outputSchema: [
+            'type' => 'object',
+            'properties' => [
+                'success' => ['type' => 'boolean'],
+                'result' => ['type' => 'object'],
+            ],
+            'required' => ['success', 'result'],
+        ]
+    )]
     public function executeRaw(
         #[Schema(description: '命令参数数组')]
         array $parameters,
@@ -51,7 +85,17 @@ class Redis
         }
     }
 
-    #[McpTool(name: 'redis_execute_lua', description: '执行Redis Lua脚本')]
+    #[McpTool(
+        name: 'redis_execute_lua',
+        description: '执行Redis Lua脚本',
+        outputSchema: [
+            'type' => 'object',
+            'properties' => [
+                'result' => ['type' => 'object'],
+            ],
+            'required' => ['result'],
+        ]
+    )]
     public function executeLua(
         #[Schema(description: 'Lua脚本内容')]
         string $script,
@@ -76,7 +120,18 @@ class Redis
         }
     }
 
-    #[McpTool(name: 'redis_execute_lua_sha', description: '使用sha1执行Redis Lua脚本')]
+    #[McpTool(
+        name: 'redis_execute_lua_sha',
+        description: '使用sha1执行Redis Lua脚本',
+        outputSchema: [
+            'type' => 'object',
+            'properties' => [
+                'success' => ['type' => 'boolean'],
+                'result' => ['type' => 'object'],
+            ],
+            'required' => ['success', 'result'],
+        ]
+    )]
     public function executeLuaSha(
         #[Schema(description: 'Lua脚本内容')]
         string $script,

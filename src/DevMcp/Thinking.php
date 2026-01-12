@@ -63,15 +63,24 @@ class Thinking
      * 9. Repeat the process until satisfied with the solution
      * 10. Provide a single, ideally correct answer as the final output
      * 11. Only set nextThoughtNeeded to false when truly done and a satisfactory answer is reached
-     * @return array{
-     *     thoughtNumber: int,
-     *     totalThoughts: int,
-     *     nextThoughtNeeded: bool,
-     *     branches: string[],
-     *     thoughtHistoryLength: int,
-     * }
      */
-    #[McpTool(name: 'sequential_thinking')]
+    #[McpTool(
+        name: 'sequential_thinking',
+        outputSchema: [
+            'type' => 'object',
+            'properties' => [
+                'thoughtNumber' => ['type' => 'number'],
+                'totalThoughts' => ['type' => 'number'],
+                'nextThoughtNeeded' => ['type' => 'boolean'],
+                'branches' => [
+                    'type' => 'array',
+                    'items' => ['type' => 'string'],
+                ],
+                'thoughtHistoryLength' => ['type' => 'number'],
+            ],
+            'required' => ['thoughtNumber', 'totalThoughts', 'nextThoughtNeeded', 'branches', 'thoughtHistoryLength'],
+        ]
+    )]
     public function sequentialThinking(
         RequestContext $context,
         #[Schema(description: 'Your current thinking step')]

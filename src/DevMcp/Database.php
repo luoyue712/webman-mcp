@@ -11,7 +11,32 @@ use Throwable;
 
 class Database
 {
-    #[McpTool(name: 'database_connections', description: '获取数据库redis配置信息列表')]
+    #[McpTool(
+        name: 'database_connections',
+        description: '获取数据库redis配置信息列表',
+        outputSchema: [
+            'type' => 'object',
+            'properties' => [
+                'default' => ['type' => 'string'],
+                'connections' => [
+                    'type' => 'array',
+                    'items' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'connection_name' => ['type' => 'string'],
+                            'driver' => ['type' => 'string'],
+                            'database' => ['type' => 'string'],
+                            'prefix' => ['type' => 'string'],
+                            'schema' => ['type' => 'string'],
+                            'pool' => ['type' => 'object'],
+                        ],
+                        'required' => ['connection_name', 'driver', 'database', 'prefix', 'schema', 'pool'],
+                    ],
+                ],
+            ],
+            'required' => ['default', 'connections'],
+        ]
+    )]
     public function databaseConnections(): array
     {
         $this->checkInstallDatabase();
@@ -31,7 +56,17 @@ class Database
         ];
     }
 
-    #[McpTool(name: 'database_execute_sql', description: '执行原始sql脚本')]
+    #[McpTool(
+        name: 'database_execute_sql',
+        description: '执行原始sql脚本',
+        outputSchema: [
+            'type' => 'object',
+            'properties' => [
+                'result' => ['type' => 'array', 'items' => ['type' => 'object']],
+            ],
+            'required' => ['result'],
+        ]
+    )]
     public function databaseExecuteSql(
         #[Schema(description: 'sql脚本')]
         string $sql,
