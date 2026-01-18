@@ -42,3 +42,26 @@ jobs:
         with:
           name: conformance-results
           path: ./tests/Conformance/results
+  qa:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          coverage: "none"
+
+      - name: Composer Validation
+        run: composer validate --strict
+
+      - name: Install Composer
+        uses: ramsey/composer-install@v3
+
+      - name: Code Style PHP
+        run: vendor/bin/php-cs-fixer fix --dry-run
+
+#      - name: PHPStan
+#        run: vendor/bin/phpstan analyse
