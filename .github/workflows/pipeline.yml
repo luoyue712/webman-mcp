@@ -21,8 +21,7 @@ jobs:
         uses: ramsey/composer-install@v3
 
       - name: Start conformance server
-        run: |
-          php tests/Conformance/server.php start -d
+        run: php tests/Conformance/server.php start -d
 
       - name: Run conformance tests
         working-directory: ./tests/Conformance
