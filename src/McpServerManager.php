@@ -157,5 +157,4 @@ final class McpServerManager
 
         return response($response->getBody(), $response->getStatusCode(), array_map('current', $response->getHeaders()));
     }
-
 }

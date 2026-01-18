@@ -14,7 +14,6 @@
     "friendsofphp/php-cs-fixer": "^3.92",
     "workerman/webman-framework": "^2.1",
     "monolog/monolog": "^3.9",
-    "mcp/sdk": "dev-main",
     "webman/event": "^1.0",
     "webman/database": "^2.1",
     "webman/redis": "^2.1"
