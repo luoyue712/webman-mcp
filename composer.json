@@ -24,6 +24,11 @@
       "Luoyue\\WebmanMcp\\": "src"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "Luoyue\\WebmanMcp\\Tests\\": "tests"
+    }
+  },
   "scripts": {
     "cs:fix": "php-cs-fixer fix --verbose",
     "cs:check": "php-cs-fixer fix --dry-run --diff"
