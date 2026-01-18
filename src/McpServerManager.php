@@ -40,12 +40,15 @@ final class McpServerManager
 
     public function __construct()
     {
-        self::$config = config(self::PLUGIN_REWFIX . 'mcp', []);
+        self::$config ??= config(self::PLUGIN_REWFIX . 'mcp', []);
         self::$transports ??= new WeakMap();
     }
 
     public static function loadConfig(): void
     {
+        if (self::$isInit) {
+            return;
+        }
         array_walk(self::$config, function (&$config, $serviceName) {
             if (!$config['logger'] instanceof LoggerInterface) {
                 $config['logger'] = $config['logger'] ?
@@ -67,6 +70,7 @@ final class McpServerManager
                     $sessionConfig['ttl'] ?? 3600
                 );
         });
+        self::$isInit = true;
     }
 
     /**
@@ -96,11 +100,7 @@ final class McpServerManager
 
     public function start(string $serviceName): mixed
     {
-        if (!self::$isInit) {
-            self::loadConfig();
-            self::$isInit = true;
-        }
-
+        self::loadConfig();
         $config = $this->getServiceConfig($serviceName);
         if (!isset(self::$server[$serviceName])) {
             $discover = $config['discover'];
