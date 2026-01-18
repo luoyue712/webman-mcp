@@ -27,8 +27,17 @@ class Database
                             'driver' => ['type' => 'string'],
                             'database' => ['type' => 'string'],
                             'prefix' => ['type' => 'string'],
-                            'schema' => ['type' => 'string'],
-                            'pool' => ['type' => 'object'],
+                            'schema' => ['type' => ['string', 'null']],
+                            'pool' => [
+                                'type' => ['object', 'null'],
+                                'properties' => [
+                                    'max_connections' => ['type' => 'integer'],
+                                    'min_connections' => ['type' => 'integer'],
+                                    'wait_timeout' => ['type' => 'integer'],
+                                    'idle_timeout' => ['type' => 'integer'],
+                                    'heartbeat_interval' => ['type' => 'integer'],
+                                ],
+                            ],
                         ],
                         'required' => ['connection_name', 'driver', 'database', 'prefix', 'schema', 'pool'],
                     ],
@@ -50,7 +59,7 @@ class Database
                     'database' => $connection['database'] ?? null,
                     'prefix' => $connection['prefix'] ?? null,
                     'schema' => $connection['schema'] ?? null,
-                    'pool' => $connection['pool'] ?? [],
+                    'pool' => $connection['pool'] ?? null,
                 ];
             }, array_keys($connections), array_values($connections)),
         ];

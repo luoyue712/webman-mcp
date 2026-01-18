@@ -63,13 +63,47 @@ class System
         name: 'list_dependence',
         description: '获取当前项目已安装依赖列表',
         outputSchema: [
-            'type' => 'array',
-            'items' => ['type' => 'object'],
+            'type' => 'object',
+            'properties' => [
+                'root' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'name' => ['type' => 'string'],
+                        'version' => ['type' => 'string'],
+                        'pretty_version' => ['type' => 'string'],
+                        'reference' => ['type' => ['string', 'null']],
+                        'type' => ['type' => 'string'],
+                        'install_path' => ['type' => 'string'],
+                        'aliases' => ['type' => 'array', 'items' => ['type' => 'string']],
+                        'dev' => ['type' => 'boolean'],
+                    ],
+                    'required' => ['name', 'version', 'pretty_version', 'reference', 'type', 'install_path', 'aliases', 'dev'],
+                ],
+                'versions' => [
+                    'type' => 'object',
+                    'additionalProperties' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'pretty_version' => ['type' => 'string'],
+                            'version' => ['type' => 'string'],
+                            'reference' => ['type' => ['string', 'null']],
+                            'type' => ['type' => 'string'],
+                            'install_path' => ['type' => 'string'],
+                            'aliases' => ['type' => 'array', 'items' => ['type' => 'string']],
+                            'dev_requirement' => ['type' => 'boolean'],
+                            'replaced' => ['type' => 'array', 'items' => ['type' => 'string']],
+                            'provided' => ['type' => 'array', 'items' => ['type' => 'string']],
+                        ],
+                        'required' => ['dev_requirement'],
+                    ],
+                ],
+            ],
+            'required' => ['root', 'versions'],
         ]
     )]
     public function listDependence(): array
     {
-        return InstalledVersions::getAllRawData();
+        return InstalledVersions::getAllRawData()[0];
     }
 
     /**
@@ -77,45 +111,27 @@ class System
      */
     #[McpTool(
         name: 'list_extensions',
-        description: '获取当前环境已加载的php扩展',
+        description: '获取当前环境已加载的php扩展以及扩展函数列表',
         outputSchema: [
-            'type' => 'array',
-            'items' => ['type' => 'string'],
+            'type' => 'object',
         ]
     )]
     public function extensions(): array
     {
-        return get_loaded_extensions();
-    }
-
-    /**
-     * @return string[]
-     */
-    #[McpTool(
-        name: 'get_extension_funcs',
-        description: '获取扩展已加载的函数',
-        outputSchema: [
-            'type' => 'array',
-            'items' => ['type' => 'string'],
-        ]
-    )]
-    public function getExtensionFuncs(
-        #[Schema(description: '扩展名')]
-        string $extension,
-    ): array
-    {
-        return get_extension_funcs($extension);
+        $extension = get_loaded_extensions();
+        $funcs = array_map(fn($item) => get_extension_funcs($item), $extension);
+        return array_combine($extension, $funcs);
     }
 
     #[McpTool(
         name: 'get_php_ini',
-        description: '获取应用程序配置',
+        description: '获取php配置信息',
         outputSchema: [
             'type' => 'object',
         ]
     )]
     public function getPhpIni(
-        #[Schema(description: '扩展名')]
+        #[Schema(description: 'ini中的key')]
         ?string $extension = null,
     ): array|bool
     {
@@ -127,7 +143,6 @@ class System
         description: '获取应用程序配置',
         outputSchema: [
             'type' => 'object',
-            'required' => [],
         ]
     )]
     public function getConfig(
@@ -142,18 +157,22 @@ class System
         name: 'list_routes',
         description: '获取路由列表',
         outputSchema: [
-            'type' => 'array',
-            'items' => [
-                'type' => 'object',
-                'properties' => [
-                    'name' => ['type' => 'string'],
-                    'uri' => ['type' => 'string'],
-                    'methods' => ['type' => 'array', 'items' => ['type' => 'string']],
-                    'callback' => ['type' => 'string'],
-                    'param' => ['type' => 'object'],
-                    'middleware' => ['type' => 'string'],
+            'type' => 'object',
+            'properties' => [
+                'routes' => [
+                    'type' => 'array',
+                    'items' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'name' => ['type' => ['string', 'null']],
+                            'uri' => ['type' => 'string'],
+                            'methods' => ['type' => 'array', 'items' => ['type' => 'string']],
+                            'callback' => ['type' => 'string'],
+                            'param' => ['type' => ['object', 'array']],
+                            'middleware' => ['type' => 'array', 'items' => ['type' => 'string']],
+                        ],
+                    ],
                 ],
-                'required' => ['name', 'uri', 'methods', 'callback', 'param', 'middleware'],
             ],
         ]
     )]
@@ -168,10 +187,12 @@ class System
                 'methods' => $route->getMethods(),
                 'callback' => $cb,
                 'param' => $route->param(),
-                'middleware' => json_encode($route->getMiddleware()),
+                'middleware' => json_decode(json_encode($route->getMiddleware()), true),
             ];
         };
-        return array_map($callback, Route::getRoutes());
+        return [
+            'routes' => array_map($callback, Route::getRoutes()),
+        ];
     }
 
     #[McpTool(
@@ -187,11 +208,11 @@ class System
                 'route' => [
                     'type' => 'object',
                     'properties' => [
-                        'name' => ['type' => 'string'],
+                        'name' => ['type' => ['string', 'null']],
                         'uri' => ['type' => 'string'],
                         'methods' => ['type' => 'array', 'items' => ['type' => 'string']],
                         'callback' => ['type' => 'string'],
-                        'param' => ['type' => 'object'],
+                        'param' => ['type' => ['object', 'array']],
                         'args' => ['type' => 'array', 'items' => ['type' => 'string']],
                         'middleware' => ['type' => 'array', 'items' => ['type' => 'string']],
                     ],
@@ -231,6 +252,7 @@ class System
             } else {
                 $plugin = App::getPluginByPath($path);
             }
+            $cb = $callback instanceof Closure ? 'Closure' : (is_array($callback) ? json_encode($callback) : var_export($callback, 1));
             return [
                 'plugin' => $plugin,
                 'app' => $app,
@@ -240,10 +262,10 @@ class System
                     'name' => $route->getName(),
                     'uri' => $route->getPath(),
                     'methods' => $route->getMethods(),
-                    'callback' => $callback,
+                    'callback' => $cb,
                     'param' => $route->param(),
                     'args' => $args,
-                    'middleware' => $route->getMiddleware(),
+                    'middleware' => json_decode(json_encode($route->getMiddleware()), true),
                 ],
             ];
         } else {
@@ -258,7 +280,7 @@ class System
         name: 'list_events',
         description: '获取事件列表',
         outputSchema: [
-            'type' => 'array',
+            'type' => 'object',
             'items' => [
                 'type' => 'object',
                 'properties' => [
@@ -293,6 +315,7 @@ class System
         name: 'get_env',
         description: '获取应用程序环境变量',
         outputSchema: [
+            'type' => 'object',
             'anyOf' => [
                 ['type' => 'object'],
                 ['type' => 'string'],
@@ -312,19 +335,25 @@ class System
         name: 'eval_code',
         description: '在当前进程中执行php代码',
         outputSchema: [
-            'type' => 'string',
+            'type' => 'object',
+            'properties' => [
+                'result' => ['type' => 'string'],
+            ],
+            'required' => ['result'],
         ]
     )]
     public function evalCode(
         #[Schema(description: 'php代码，注意：在代码中必须删除declare语句，如有class代码块请使用`if (!class_exists({className})){}`包裹防止重复加载类。')]
         string $code,
-    ): string
+    ): array
     {
         $code = str_replace(['<?php', '?>'], '', $code);
         ob_start();
         try {
             eval($code);
-            return ob_get_contents();
+            return [
+                'result' => ob_get_contents(),
+            ];
         } catch (Throwable $e) {
             throw new ToolCallException($e->getMessage(), previous: $e);
         } finally {
@@ -336,29 +365,41 @@ class System
         name: 'build_phar',
         description: '将项目代码打包为phar文件',
         outputSchema: [
-            'type' => 'string',
+            'type' => 'object',
+            'properties' => [
+                'result' => ['type' => 'string'],
+            ],
+            'required' => ['result'],
         ]
     )]
-    public function buildPhar(): string
+    public function buildPhar(): array
     {
         if (!class_exists(BuildPharCommand::class)) {
             throw new ToolCallException('当前环境暂不支持执行此tool');
         }
-        return McpHelper::fetch_console(BuildPharCommand::class);
+        return [
+            'result' => McpHelper::fetch_console(BuildPharCommand::class),
+        ];
     }
 
     #[McpTool(
         name: 'build_bin',
         description: '将项目代码打包为linux二进制可执行文件',
         outputSchema: [
-            'type' => 'string',
+            'type' => 'object',
+            'properties' => [
+                'result' => ['type' => 'string'],
+            ],
+            'required' => ['result'],
         ]
     )]
-    public function buildBin(): string
+    public function buildBin(): array
     {
         if (!class_exists(BuildBinCommand::class)) {
             throw new ToolCallException('当前环境暂不支持执行此tool');
         }
-        return McpHelper::fetch_console(BuildBinCommand::class);
+        return [
+            'result' => McpHelper::fetch_console(BuildBinCommand::class),
+        ];
     }
 }

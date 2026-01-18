@@ -24,9 +24,18 @@ class Redis
                         'type' => 'object',
                         'properties' => [
                             'connection_name' => ['type' => 'string'],
-                            'database' => ['type' => 'string'],
-                            'prefix' => ['type' => 'string'],
-                            'pool' => ['type' => 'object'],
+                            'database' => ['type' => 'integer'],
+                            'prefix' => ['type' => ['string', 'null']],
+                            'pool' => [
+                                'type' => ['object', 'null'],
+                                'properties' => [
+                                    'max_connections' => ['type' => 'integer'],
+                                    'min_connections' => ['type' => 'integer'],
+                                    'wait_timeout' => ['type' => 'integer'],
+                                    'idle_timeout' => ['type' => 'integer'],
+                                    'heartbeat_interval' => ['type' => 'integer'],
+                                ],
+                            ],
                         ],
                         'required' => ['connection_name', 'database', 'prefix', 'pool'],
                     ],
@@ -46,7 +55,7 @@ class Redis
                     'connection_name' => $key,
                     'database' => $connection['database'] ?? null,
                     'prefix' => $connection['prefix'] ?? null,
-                    'pool' => $connection['pool'] ?? [],
+                    'pool' => $connection['pool'] ?? null,
                 ];
             }, array_keys($connections), array_values($connections)),
         ];
@@ -59,7 +68,7 @@ class Redis
             'type' => 'object',
             'properties' => [
                 'success' => ['type' => 'boolean'],
-                'result' => ['type' => 'object'],
+                'result' => ['type' => ['object', 'null', 'boolean', 'string', 'integer', 'array']],
             ],
             'required' => ['success', 'result'],
         ]
@@ -91,7 +100,7 @@ class Redis
         outputSchema: [
             'type' => 'object',
             'properties' => [
-                'result' => ['type' => 'object'],
+                'result' => ['object', 'null', 'boolean', 'string', 'integer', 'array'],
             ],
             'required' => ['result'],
         ]
@@ -127,7 +136,7 @@ class Redis
             'type' => 'object',
             'properties' => [
                 'success' => ['type' => 'boolean'],
-                'result' => ['type' => 'object'],
+                'result' => ['object', 'null', 'boolean', 'string', 'integer', 'array'],
             ],
             'required' => ['success', 'result'],
         ]
