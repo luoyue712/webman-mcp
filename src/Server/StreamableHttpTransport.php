@@ -5,7 +5,6 @@ namespace Luoyue\WebmanMcp\Server;
 use Http\Discovery\Psr17FactoryDiscovery;
 use const JSON_THROW_ON_ERROR;
 use JsonException;
-use Luoyue\WebmanMcp\McpHelper;
 use Mcp\Schema\JsonRpc\Error;
 use Mcp\Server\Transport\StreamableHttpTransport as BaseStreamableHttpTransport;
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -16,6 +15,7 @@ use Psr\Log\LoggerInterface;
 use support\Context;
 use Symfony\Component\Uid\Uuid;
 use Workerman\Connection\TcpConnection;
+use Workerman\Coroutine;
 use Workerman\Protocols\Http\ServerSentEvents;
 use Workerman\Timer;
 
@@ -95,7 +95,7 @@ class StreamableHttpTransport extends BaseStreamableHttpTransport
             }
         };
 
-        McpHelper::coroutine_defer($callback);
+        Coroutine::isCoroutine() ? Coroutine::defer($callback) : Timer::delay(0.000001, $callback);
         $response = $this->responseFactory->createResponse(200)
             ->withHeader('Content-Type', 'text/event-stream')
             ->withHeader('Cache-Control', 'no-cache')

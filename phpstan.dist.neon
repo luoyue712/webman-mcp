@@ -1,0 +1,15 @@
+parameters:
+    level: 6
+    paths:
+        - src/
+        - tests/
+    excludePaths:
+        - src/DevMcp/
+    treatPhpDocTypesAsCertain: false
+    ignoreErrors:
+        -
+            message: "#Cannot call static method from\\\\(\\\\) on array\\\\|class-string<UnitEnum>#"
+            path: src/Command/QuestionHelper.php
+        -
+            message: "#Method Luoyue\\\\WebmanMcp\\\\Command\\\\QuestionHelper::handleQuestions\\(\\) has parameter \\$questions with no value type specified in iterable type array#"
+            path: src/Command/QuestionHelper.php
