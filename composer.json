@@ -1,7 +1,7 @@
 {
   "name": "luoyue/webman-mcp",
   "type": "library",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "description": "Webman plugin luoyue/webman-mcp",
   "require": {
     "php": ">=8.1",
