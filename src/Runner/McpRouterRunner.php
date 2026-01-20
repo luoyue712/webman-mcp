@@ -8,6 +8,9 @@ use Webman\Route;
 
 final class McpRouterRunner implements McpRunnerInterface
 {
+    /**
+     * @return Route\Route[]
+     */
     public static function create(): array
     {
         $routes = [];

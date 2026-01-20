@@ -7,7 +7,7 @@ class Install
     public const WEBMAN_PLUGIN = true;
 
     /**
-     * @var array
+     * @var array<string, string>
      */
     protected static $pathRelation = [
         'config/plugin/luoyue/webman-mcp' => 'config/plugin/luoyue/webman-mcp',
@@ -16,7 +16,7 @@ class Install
     /**
      * Install.
      */
-    public static function install()
+    public static function install(): void
     {
         static::installByRelation();
     }
@@ -24,7 +24,7 @@ class Install
     /**
      * Uninstall.
      */
-    public static function uninstall()
+    public static function uninstall(): void
     {
         self::uninstallByRelation();
     }
@@ -32,7 +32,7 @@ class Install
     /**
      * installByRelation.
      */
-    public static function installByRelation()
+    public static function installByRelation(): void
     {
         foreach (static::$pathRelation as $source => $dest) {
             if ($pos = strrpos($dest, '/')) {
@@ -51,7 +51,7 @@ class Install
     /**
      * uninstallByRelation.
      */
-    public static function uninstallByRelation()
+    public static function uninstallByRelation(): void
     {
         foreach (static::$pathRelation as $source => $dest) {
             $path = base_path() . "/{$dest}";
