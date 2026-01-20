@@ -17,25 +17,9 @@ return [
         // MCP功能配置
         'configure' => function (Builder $server) {
             // 设置服务信息
-            $server->setServerInfo(
-                name: 'MCP Server',
-                version: '0.0.1',
-                description: 'MCP Server',
-                icons: [
-                    new Icon(
-                        src: 'https://manual.workerman.net/favicon.ico',
-                        mimeType: 'image/x-icon',
-                        sizes: ['32x32']
-                    ),
-                ],
-                websiteUrl: 'https://www.workerman.net/'
-            );
+            $server->setServerInfo('mcp-conformance-test-server', '1.0.0');
             // 设置协议版本
             $server->setProtocolVersion(ProtocolVersion::V2025_06_18);
-            // 设置使用说明
-            $server->setInstructions('MCP Server');
-            // 设置分页大小
-            $server->setPaginationLimit(50);
             // 设置需要开启的功能
             $server->setCapabilities(new ServerCapabilities(
                 tools: true,

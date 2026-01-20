@@ -119,7 +119,7 @@ class System
     public function extensions(): array
     {
         $extension = get_loaded_extensions();
-        $funcs = array_map(fn($item) => get_extension_funcs($item), $extension);
+        $funcs = array_map(fn ($item) => get_extension_funcs($item), $extension);
         return array_combine($extension, $funcs);
     }
 
