@@ -268,12 +268,10 @@ class System
                     'middleware' => json_decode(json_encode($route->getMiddleware()), true),
                 ],
             ];
-        } else {
-            if ($routeInfo[0] === Dispatcher::METHOD_NOT_ALLOWED) {
-                throw new ToolCallException('Method Not Allowed. Supported methods: ' . implode(', ', $routeInfo[1]));
-            }
-            throw new ToolCallException('Not Found');
+        } else if ($routeInfo[0] === Dispatcher::METHOD_NOT_ALLOWED) {
+            throw new ToolCallException('Method Not Allowed. Supported methods: ' . implode(', ', $routeInfo[1]));
         }
+        throw new ToolCallException('Not Found');
     }
 
     #[McpTool(
