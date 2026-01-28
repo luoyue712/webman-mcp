@@ -12,36 +12,26 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Setup Node
-        uses: actions/setup-node@v6
-        with:
-          node-version: '22'
-
       - name: Install Composer
         uses: ramsey/composer-install@v3
 
       - name: Start conformance server
         run: php tests/Conformance/server.php start -d
 
-      - name: Run conformance tests
-        working-directory: ./tests/Conformance
-        run: |
-          exit_code=0
-          OUTPUT=$(npx @modelcontextprotocol/conformance server --url http://localhost:8000/mcp) || exit_code=1 
-          echo "$OUTPUT"
-          
-          passedTests=$(echo "$OUTPUT" | sed -nE 's/.*Total: ([0-9]+) passed.*/\1/p')
-          passedTests=${passedTests:-0}
-          
-          REQUIRED_TESTS_TO_PASS=22
-          echo "Required tests to pass: $REQUIRED_TESTS_TO_PASS"
-          [ "$passedTests" -ge "$REQUIRED_TESTS_TO_PASS" ] || exit $exit_code
-      - name: Upload conformance results
-        if: always()
-        uses: actions/upload-artifact@v6
+      - uses: modelcontextprotocol/conformance@v0.1.11
         with:
-          name: conformance-results
-          path: ./tests/Conformance/results
+          mode: server
+          suite: all
+          verbose: true
+          url: http://localhost:8000/mcp
+          expected-failures: ./tests/Conformance/conformance-baseline.yml # optional
+
+      # - name: Upload conformance results
+      #   if: always()
+      #   uses: actions/upload-artifact@v6
+      #   with:
+      #     name: conformance-results
+      #     path: ./results
   qa:
     runs-on: ubuntu-latest
     steps:
