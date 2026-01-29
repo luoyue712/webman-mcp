@@ -13,8 +13,12 @@ use Workerman\Connection\TcpConnection;
 
 final class McpProcessRunner implements McpRunnerInterface
 {
+    /** @var array<int, mixed> */
     private static array $endpoint = [];
 
+    /**
+     * @return array<string, mixed>
+     */
     public static function create(): array
     {
         $process = [];

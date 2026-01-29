@@ -15,7 +15,7 @@ final class QuestionHelper
     /**
      * 处理问题交互并获取用户输入.
      *
-     * @param array<T, array{question: string, regex: string, default?: mixed, validator?: callable, choice?: array|class-string<UnitEnum>}> $questions 问题配置数组
+     * @param array<T, array{question: string, regex?: string, default?: mixed, validator?: callable, choice?: array|class-string<UnitEnum>}> $questions 问题配置数组
      * @param SymfonyStyle $style Symfony控制台样式
      * @return array<T, string|string[]> 用户回答的答案数组
      */
@@ -37,7 +37,7 @@ final class QuestionHelper
                     $choiceList = $question['choice'];
                     $is_enum = false;
                     if (is_string($question['choice']) && is_subclass_of($question['choice'], UnitEnum::class)) {
-                        $choiceList = array_map(fn ($case) => $case->value, $question['choice']::cases());
+                        $choiceList = array_map(fn ($case) => $case->name, $question['choice']::cases());
                         $is_enum = true;
                     }
                     $answer = $style->choice(

@@ -17,7 +17,12 @@ final class WebmanEvent implements EventDispatcherInterface
         return class_exists(Event::class);
     }
 
-    public function dispatch(object $event): void
+    /**
+     * @template T of object
+     * @param T $event
+     * @return T
+     */
+    public function dispatch(object $event): object
     {
         $eventMode = config('plugin.luoyue.webman-mcp.app.event_mode', 'dispatch');
         if ($eventMode === 'dispatch') {
@@ -25,5 +30,6 @@ final class WebmanEvent implements EventDispatcherInterface
         } else {
             Event::emit(get_class($event), $event);
         }
+        return $event;
     }
 }
