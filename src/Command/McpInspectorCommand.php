@@ -4,9 +4,9 @@ namespace Luoyue\WebmanMcp\Command;
 
 use Luoyue\WebmanMcp\McpServerManager;
 use support\Container;
-use Symfony\Component\Console\Attribute\Argument;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -14,8 +14,14 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 #[AsCommand('mcp:inspector', 'Start MCP inspector')]
 final class McpInspectorCommand extends Command
 {
-    public function __invoke(InputInterface $input, OutputInterface $output, #[Argument('Service name')] ?string $service): int
+    public function configure(): void
     {
+        $this->addArgument('service', InputArgument::OPTIONAL, 'Service name');
+    }
+
+    public function __invoke(InputInterface $input, OutputInterface $output, ?string $service = null): int
+    {
+        $service ??= $input->getArgument('service');
         $style = new SymfonyStyle($input, $output);
         /** @var McpServerManager $mcpServerManager */
         $mcpServerManager = Container::get(McpServerManager::class);

@@ -5,9 +5,9 @@ namespace Luoyue\WebmanMcp\Command;
 use Luoyue\WebmanMcp\McpServerManager;
 use Mcp\Schema\Enum\ProtocolVersion;
 use support\Container;
-use Symfony\Component\Console\Attribute\Argument;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -15,12 +15,17 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 #[AsCommand('mcp:make', 'Create MCP service or template')]
 final class McpMakeCommand extends Command
 {
+    public function configure(): void
+    {
+        $this->addArgument('type', InputArgument::OPTIONAL, 'Type name', suggestedValues: ['config', 'template']);
+    }
+
     public function __invoke(
         InputInterface $input,
         OutputInterface $output,
-        #[Argument('type name', suggestedValues: ['config', 'template'])]
-        string $type,
+        ?string $type = null,
     ): int {
+        $type ??= $input->getArgument('type');
         $style = new SymfonyStyle($input, $output);
         switch ($type) {
             case 'config':
