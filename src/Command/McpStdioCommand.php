@@ -4,7 +4,6 @@ namespace Luoyue\WebmanMcp\Command;
 
 use Luoyue\WebmanMcp\McpServerManager;
 use support\Container;
-use Symfony\Component\Console\Attribute\Argument;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;

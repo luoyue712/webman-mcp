@@ -14,7 +14,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 #[AsCommand('mcp:inspector', 'Start MCP inspector')]
 final class McpInspectorCommand extends Command
 {
-
     public function configure(): void
     {
         $this->addArgument('service', InputArgument::OPTIONAL, 'Service name');
