@@ -17,7 +17,7 @@ final class McpMakeCommand extends Command
 {
     public function configure(): void
     {
-        $this->addArgument('type', InputArgument::OPTIONAL, 'Type name', suggestedValues: ['config', 'template']);
+        $this->addArgument('type', InputArgument::OPTIONAL, 'Type name');
     }
 
     public function __invoke(

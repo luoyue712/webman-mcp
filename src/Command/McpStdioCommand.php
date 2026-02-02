@@ -25,7 +25,7 @@ final class McpStdioCommand extends Command
         /** @var McpServerManager $mcpServerManager */
         $mcpServerManager = Container::get(McpServerManager::class);
         $config = $mcpServerManager->getServiceConfig($service);
-        if (!$config['transport']['stdio']['enable'] ?? false) {
+        if (!($config['transport']['stdio']['enable'] ?? false)) {
             $output->writeln("<error>MCP service: {$service} not enable stdio</error>");
             return Command::FAILURE;
         }

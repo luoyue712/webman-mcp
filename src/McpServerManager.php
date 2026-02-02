@@ -30,12 +30,13 @@ final class McpServerManager
 
     public static bool $isInit = false;
 
+    /** @var array<string, mixed> */
     private static array $config;
 
     /** @var array<Server> */
     private static array $server = [];
 
-    /** @var WeakMap<TransportInterface, int> */
+    /** @var WeakMap<TransportInterface<mixed>, int> */
     private static WeakMap $transports;
 
     public function __construct()
@@ -54,8 +55,10 @@ final class McpServerManager
                 $config['logger'] = $config['logger'] ?
                     Log::channel(self::PLUGIN_REWFIX . $config['logger']) : Container::get(NullLogger::class);
             }
+            if ($config['discover']['cache'] !== null) {
+                $config['discover']['cache'] = Cache::store($config['discover']['cache']);
+            }
 
-            $config['discover']['cache'] ??= $config['discover']['cache'] === null ? null : Cache::store($config['discover']['cache']);
             $config['discover']['exclude_dirs'] ??= ['vendor'];
 
             if (!isset($config['session'])) {
@@ -81,6 +84,9 @@ final class McpServerManager
         yield from array_keys(self::$config);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getServiceConfig(string $serviceName): array
     {
         $config = self::$config[$serviceName] ?? null;
@@ -91,7 +97,7 @@ final class McpServerManager
     }
 
     /**
-     * @return WeakMap<TransportInterface, int>
+     * @return WeakMap<TransportInterface<mixed>, int>
      */
     public function getTransports(): WeakMap
     {
@@ -119,7 +125,7 @@ final class McpServerManager
         return isset($_ENV['SHELL_VERBOSITY']) ? $this->handleStdioMessage($server, $serviceName) : $this->handleHttpRequest($server, $serviceName);
     }
 
-    private function handleStdioMessage(Server $server, string $serviceName)
+    private function handleStdioMessage(Server $server, string $serviceName): int
     {
         $config = $this->getServiceConfig($serviceName);
 

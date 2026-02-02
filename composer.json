@@ -16,7 +16,8 @@
     "monolog/monolog": "^3.9",
     "webman/event": "^1.0",
     "webman/database": "^2.1",
-    "webman/redis": "^2.1"
+    "webman/redis": "^2.1",
+    "phpstan/phpstan": "^2.1"
   },
   "autoload": {
     "psr-4": {
@@ -30,7 +31,9 @@
   },
   "scripts": {
     "cs:fix": "php-cs-fixer fix --verbose",
-    "cs:check": "php-cs-fixer fix --dry-run --diff"
+    "cs:check": "php-cs-fixer fix --dry-run --diff",
+    "phpstan": "phpstan analyse --memory-limit=2G",
+    "phpstan-fix": "phpstan analyse --memory-limit=2G --fix"
   },
   "minimum-stability": "dev",
   "prefer-stable": true,

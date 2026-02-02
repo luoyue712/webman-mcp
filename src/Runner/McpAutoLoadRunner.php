@@ -12,6 +12,7 @@ use Workerman\Worker;
 
 final class McpAutoLoadRunner implements McpRunnerInterface, Bootstrap
 {
+    /** @return array<class-string<Bootstrap>> */
     public static function create(): array
     {
         return [self::class];
@@ -29,7 +30,7 @@ final class McpAutoLoadRunner implements McpRunnerInterface, Bootstrap
             return;
         }
 
-        if ($editor && !$editor instanceof McpClientRegisterEnum) {
+        if (!$editor instanceof McpClientRegisterEnum) {
             throw new RuntimeException('editor must be instanceof McpClientDirectoryEnum');
         }
 

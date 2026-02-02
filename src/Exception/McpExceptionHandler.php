@@ -2,6 +2,7 @@
 
 namespace Luoyue\WebmanMcp\Exception;
 
+use Exception;
 use Mcp\Schema\JsonRpc\Error;
 use Throwable;
 use Webman\Exception\BusinessException;
@@ -11,6 +12,7 @@ use Webman\Http\Response;
 
 class McpExceptionHandler extends ExceptionHandler
 {
+    /** @var class-string<Exception>[] */
     public $dontReport = [
         BusinessException::class,
     ];
