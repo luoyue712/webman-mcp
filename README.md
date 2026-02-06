@@ -1,6 +1,6 @@
 # webman-mcp
 
-![Packagist Version](https://img.shields.io/packagist/v/luoyue/webman-mcp) ![Packagist License](https://img.shields.io/packagist/l/luoyue/webman-mcp) ![PHP Version](https://img.shields.io/packagist/dependency-v/luoyue/webman-mcp/php) ![SDK Version](https://img.shields.io/packagist/dependency-v/luoyue/webman-mcp/mcp%2Fsdk?label=sdk) ![Packagist Downloads](https://img.shields.io/packagist/dt/luoyue/webman-mcp) ![Packagist Stars](https://img.shields.io/packagist/stars/luoyue/webman-mcp)
+![Packagist Version](https://img.shields.io/packagist/v/luoyue/webman-mcp) ![Packagist License](https://img.shields.io/packagist/l/luoyue/webman-mcp) ![PHP Version](https://img.shields.io/packagist/dependency-v/luoyue/webman-mcp/php) ![SDK Version](https://img.shields.io/packagist/dependency-v/luoyue/webman-mcp/mcp%2Fsdk?label=sdk) [![MCP](https://img.shields.io/badge/MCP-Model%20Context%20Protocol-purple)](https://modelcontextprotocol.io/) ![Packagist Downloads](https://img.shields.io/packagist/dt/luoyue/webman-mcp) ![Packagist Stars](https://img.shields.io/packagist/stars/luoyue/webman-mcp)
 
 这是一个Webman框架与官方MCP PHP SDK深度集成的插件，并在SDK基础上进行了扩展，可快速创建MCP服务器。
 

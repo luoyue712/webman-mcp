@@ -34,8 +34,8 @@ final class McpInspectorCommand extends Command
                 ],
             ], $style)['service'];
         }
-        $npxPath = $this->findExecutable(DIRECTORY_SEPARATOR === '\\' ? 'npx.cmd' : 'npx');
-        if ($npxPath === null) {
+        $binPath = $this->findExecutable('bunx') ?? $this->findExecutable(DIRECTORY_SEPARATOR === '\\' ? 'npx.cmd' : 'npx');
+        if ($binPath === null) {
             $style->error('npx not found. Please install Node.js to use the MCP Inspector.');
             $style->writeln('Visit: https://nodejs.org/');
 
@@ -44,7 +44,7 @@ final class McpInspectorCommand extends Command
 
         $command = sprintf(
             '%s -y @modelcontextprotocol/inspector %s',
-            escapeshellarg($npxPath),
+            escapeshellarg($binPath),
             base_path('webman') . ' mcp:server ' . $service,
         );
 

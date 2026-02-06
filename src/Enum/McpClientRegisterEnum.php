@@ -10,6 +10,9 @@ enum McpClientRegisterEnum: string
     /** vscode编辑器(工作区安装) */
     case VSCODE_IDE = './.vscode/mcp.json';
 
+    /** opencode(工作区安装) */
+    case OPENCODE_CODE = './opencode.json';
+
     /** claude(工作区安装) */
     case CLAUDE_CODE = './.mcp.json';
 
@@ -38,6 +41,7 @@ enum McpClientRegisterEnum: string
     {
         return match ($this) {
             self::VSCODE_IDE => 'servers',
+            self::OPENCODE_CODE => 'mcp',
             default => 'mcpServers',
         };
     }
