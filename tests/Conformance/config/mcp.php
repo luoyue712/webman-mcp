@@ -66,11 +66,11 @@ return [
             'exclude_dirs' => [
             ],
             // 缓存扫描结果，cache.php中的缓存配置名称，对于webman常驻内存框架无提升并且无法及时清理缓存，建议关闭。
-            'cache' => '',
+            'cache' => null,
         ],
         // session设置
         'session' => [
-            'store' => null, // 对应cache.php中的缓存配置名称, null为使用默认的内存缓存（多进程模式下不适用）
+            'store' => '', // 对应cache.php中的缓存配置名称, null为使用默认的内存缓存（多进程模式下不适用）
             'prefix' => 'mcp-',
             'ttl' => 86400,
         ],

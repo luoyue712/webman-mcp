@@ -28,7 +28,7 @@ $handler = new $process['handler'];
 
 $worker = new Worker($process['listen']);
 $worker->name = 'conformance';
-// $worker->count = cpu_count() * 4;
+$worker->count = cpu_count() * 4;
 $worker->eventLoop = event_loop();
 $worker->onWorkerStart = fn () => Http::requestClass(Request::class);
 $worker->onMessage = [$handler, 'onMessage'];
