@@ -13,20 +13,23 @@ use Mcp\Server\Builder;
 use Workerman\Events\Fiber;
 use Workerman\Events\Swoole;
 use Workerman\Events\Swow;
+use Workerman\Events\Ev;
 use Composer\InstalledVersions;
 
 function event_loop(): string
 {
+    if (extension_loaded('swoole')) {
+        return Swoole::class;
+    }
     if (extension_loaded('swow')) {
         return Swow::class;
     }
-    if (extension_loaded('swoole')) {
-        return Swoole::class;
+    if (extension_loaded('ev')) {
+        return Ev::class;
     }
     if (InstalledVersions::isInstalled('revolt/event-loop')) {
         return Fiber::class;
     }
-
     return '';
 }
 
