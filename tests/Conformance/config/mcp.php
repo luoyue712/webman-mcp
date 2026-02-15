@@ -12,6 +12,21 @@ use Mcp\Schema\Result\CallToolResult;
 use Mcp\Schema\ServerCapabilities;
 use Mcp\Server\Builder;
 
+function event_loop(): string
+{
+    if (extension_loaded('swow')) {
+        return Swow::class;
+    }
+    if (extension_loaded('swoole')) {
+        return Swoole::class;
+    }
+    if (InstalledVersions::isInstalled('revolt/event-loop')) {
+        return Fiber::class;
+    }
+
+    return '';
+}
+
 return [
     'conformance' => [
         // MCP功能配置
@@ -93,8 +108,9 @@ return [
                 'process' => [
                     'enable' => true,
                     'port' => 8000,
-                    'count' => 1,
-                    'eventloop' => '',
+                    'count' => cpu_count() * 4,
+                    'eventloop' => event_loop(),
+                    'reusePort' => true,
                 ],
             ],
         ],

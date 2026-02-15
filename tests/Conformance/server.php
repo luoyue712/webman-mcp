@@ -23,14 +23,15 @@ Config::load(__DIR__ . '/config', ['app', 'mcp']);
 $mcpServerManager = new McpServerManager();
 McpServerManager::loadConfig();
 
-$process = McpProcessRunner::create()['conformance'];
+$name = 'conformance';
+$process = McpProcessRunner::create()[$name];
 $handler = new $process['handler'];
 
 $worker = new Worker($process['listen']);
-$worker->name = 'conformance';
-$worker->count = cpu_count() * 4;
-$worker->eventLoop = event_loop();
-$worker->reusePort = true;
+$worker->name = $name;
+$worker->count = $process['count'] ?? 1;
+$worker->eventLoop = $process['eventloop'] ?? '';
+$worker->reusePort = $process['reusePort'] ?? false;
 $worker->onWorkerStart = fn () => Http::requestClass(Request::class);
 $worker->onMessage = [$handler, 'onMessage'];
 
@@ -38,18 +39,3 @@ if (DIRECTORY_SEPARATOR === '\\') {
     Worker::$logFile = 'php://stdout';
 }
 Worker::runAll();
-
-function event_loop(): string
-{
-    if (extension_loaded('swow')) {
-        return Swow::class;
-    }
-    if (extension_loaded('swoole')) {
-        return Swoole::class;
-    }
-    if (InstalledVersions::isInstalled('revolt/event-loop')) {
-        return Fiber::class;
-    }
-
-    return '';
-}
