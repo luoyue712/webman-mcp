@@ -28,8 +28,8 @@ jobs:
           coverage: "none"
           tools: composer,pie
           extensions: ${{ matrix.extension }}, fileinfo
-      #        env:
-      #          fail-fast: ${{ matrix.extension != 'swow' && matrix.extension != 'fiber' }}
+        env:
+          fail-fast: ${{ matrix.extension != 'swow' && matrix.extension != 'fiber' }}
 
       - name: Install swow (Linux with sudo)
         if: ${{ matrix.extension == 'swow' && runner.os == 'Linux' }}
