@@ -47,7 +47,7 @@ jobs:
         run: composer require revolt/event-loop
 
       - name: Start conformance server
-        run: php tests/Conformance/server.php start -d
+        run: php tests/Conformance/server.php start -d &
 
       - uses: modelcontextprotocol/conformance@v0.1.14
         with:
