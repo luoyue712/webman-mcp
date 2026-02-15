@@ -11,7 +11,7 @@ jobs:
     strategy:
       matrix:
         operating-system: [ 'ubuntu-latest', 'macos-latest' ] # 'windows-latest',
-        extension: [ event, ev, swoole, swow, fiber ]
+        extension: [ pcntl, event, ev, swoole, swow, fiber ]
         exclude:
           - operating-system: 'windows-latest'
             extension: 'event'
