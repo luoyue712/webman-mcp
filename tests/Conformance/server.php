@@ -1,13 +1,9 @@
 <?php
 
-use Composer\InstalledVersions;
 use Luoyue\WebmanMcp\McpServerManager;
 use Luoyue\WebmanMcp\Runner\McpProcessRunner;
 use support\Request;
 use Webman\Config;
-use Workerman\Events\Fiber;
-use Workerman\Events\Swoole;
-use Workerman\Events\Swow;
 use Workerman\Protocols\Http;
 use Workerman\Worker;
 
