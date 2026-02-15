@@ -28,7 +28,11 @@ jobs:
 
       - name: Install swow
         if: ${{ matrix.extension == 'swow' }}
-        run: sudo pie install swow/swow-extension
+        run: |
+          if ! pie install swow/swow-extension; then
+            # 如果失败则使用 sudo
+            sudo pie install swow/swow-extension
+          fi
 
       - name: Install Composer
         uses: ramsey/composer-install@v3
