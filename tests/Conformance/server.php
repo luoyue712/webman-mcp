@@ -30,6 +30,7 @@ $worker = new Worker($process['listen']);
 $worker->name = 'conformance';
 $worker->count = cpu_count() * 4;
 $worker->eventLoop = event_loop();
+$worker->reusePort = true;
 $worker->onWorkerStart = fn () => Http::requestClass(Request::class);
 $worker->onMessage = [$handler, 'onMessage'];
 
