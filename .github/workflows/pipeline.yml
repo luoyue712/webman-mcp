@@ -26,13 +26,13 @@ jobs:
         env:
           fail-fast: ${{ matrix.extension != 'swow' && matrix.extension != 'fiber' }}
 
-      - name: Install swow
-        if: ${{ matrix.extension == 'swow' }}
-        run: |
-          if ! pie install swow/swow-extension; then
-            # 如果失败则使用 sudo
-            sudo pie install swow/swow-extension
-          fi
+      - name: Install swow (Linux with sudo)
+        if: ${{ matrix.extension == 'swow' && runner.os == 'Linux' }}
+        run: sudo pie install swow/swow-extension
+
+      - name: Install swow (Windows/macOS)
+        if: ${{ matrix.extension == 'swow' && (runner.os == 'Windows' || runner.os == 'macOS') }}
+        run: pie install swow/swow-extension
 
       - name: Install Composer
         uses: ramsey/composer-install@v3
