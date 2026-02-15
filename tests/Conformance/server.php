@@ -1,9 +1,13 @@
 <?php
 
+use Composer\InstalledVersions;
 use Luoyue\WebmanMcp\McpServerManager;
 use Luoyue\WebmanMcp\Runner\McpProcessRunner;
 use support\Request;
 use Webman\Config;
+use Workerman\Events\Fiber;
+use Workerman\Events\Swoole;
+use Workerman\Events\Swow;
 use Workerman\Protocols\Http;
 use Workerman\Worker;
 
@@ -23,6 +27,9 @@ $process = McpProcessRunner::create()['conformance'];
 $handler = new $process['handler'];
 
 $worker = new Worker($process['listen']);
+$worker->name = 'conformance';
+// $worker->count = cpu_count() * 4;
+$worker->eventLoop = event_loop();
 $worker->onWorkerStart = fn () => Http::requestClass(Request::class);
 $worker->onMessage = [$handler, 'onMessage'];
 
@@ -30,3 +37,18 @@ if (DIRECTORY_SEPARATOR === '\\') {
     Worker::$logFile = 'php://stdout';
 }
 Worker::runAll();
+
+function event_loop(): string
+{
+    if (extension_loaded('swow')) {
+        return Swow::class;
+    }
+    if (extension_loaded('swoole')) {
+        return Swoole::class;
+    }
+    if (InstalledVersions::isInstalled('revolt/event-loop')) {
+        return Fiber::class;
+    }
+
+    return '';
+}

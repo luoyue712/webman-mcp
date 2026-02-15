@@ -1,5 +1,5 @@
 /vendor
-/results
+/tests/Conformance/runtime
 .idea
 composer.lock
 .php-cs-fixer.cache

@@ -66,7 +66,7 @@ return [
             'exclude_dirs' => [
             ],
             // 缓存扫描结果，cache.php中的缓存配置名称，对于webman常驻内存框架无提升并且无法及时清理缓存，建议关闭。
-            'cache' => null,
+            'cache' => '',
         ],
         // session设置
         'session' => [

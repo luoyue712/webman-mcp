@@ -7,24 +7,48 @@ permissions:
 
 jobs:
   conformance:
+    strategy:
+      matrix:
+        extension: [ event, swoole, swow, fiber ]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v6
 
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          coverage: "none"
+          tools: composer,pie
+          extensions: ${{ matrix.extension }}
+        env:
+          fail-fast: ${{ matrix.extension != 'swow' && matrix.extension != 'fiber' }}
+
+      - name: Install swow
+        if: ${{ matrix.extension == 'swow' }}
+        run: sudo pie install swow/swow-extension
+
       - name: Install Composer
         uses: ramsey/composer-install@v3
 
-      - name: Start conformance server
-        run: php tests/Conformance/server.php start -d
+      - name: Install revolt
+        if: ${{ matrix.extension == 'fiber' }}
+        run: composer require revolt/event-loop
 
-      - uses: modelcontextprotocol/conformance@v0.1.11
+      - name: Start conformance server
+        run: |
+          php tests/Conformance/server.php start -d
+          timeout 15 bash -c 'until curl -s http://localhost:8000/mcp; do sleep 0.5; done'
+
+      - uses: modelcontextprotocol/conformance@v0.1.14
         with:
+          node-version: 22
           mode: server
           suite: all
           verbose: true
           url: http://localhost:8000/mcp
-          expected-failures: ./tests/Conformance/conformance-baseline.yml # optional
+          expected-failures: ./tests/Conformance/conformance-baseline.yml
 
       # - name: Upload conformance results
       #   if: always()
