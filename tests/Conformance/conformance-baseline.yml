@@ -6,5 +6,3 @@ server:
   - resources-subscribe
   - resources-unsubscribe
   - dns-rebinding-protection
-  # 多进程环境下运行失败
-  - server-sse-multiple-streams
