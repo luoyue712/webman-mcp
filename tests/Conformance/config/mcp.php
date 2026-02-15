@@ -7,10 +7,31 @@ use Mcp\Schema\Content\EmbeddedResource;
 use Mcp\Schema\Content\ImageContent;
 use Mcp\Schema\Content\TextContent;
 use Mcp\Schema\Enum\ProtocolVersion;
-use Mcp\Schema\Icon;
 use Mcp\Schema\Result\CallToolResult;
 use Mcp\Schema\ServerCapabilities;
 use Mcp\Server\Builder;
+use Workerman\Events\Fiber;
+use Workerman\Events\Swoole;
+use Workerman\Events\Swow;
+use Workerman\Events\Ev;
+use Composer\InstalledVersions;
+
+function event_loop(): string
+{
+    if (extension_loaded('swoole')) {
+        return Swoole::class;
+    }
+    if (extension_loaded('swow')) {
+        return Swow::class;
+    }
+    if (extension_loaded('ev')) {
+        return Ev::class;
+    }
+    if (InstalledVersions::isInstalled('revolt/event-loop')) {
+        return Fiber::class;
+    }
+    return '';
+}
 
 return [
     'conformance' => [
@@ -70,7 +91,7 @@ return [
         ],
         // session设置
         'session' => [
-            'store' => null, // 对应cache.php中的缓存配置名称, null为使用默认的内存缓存（多进程模式下不适用）
+            'store' => '', // 对应cache.php中的缓存配置名称, null为使用默认的内存缓存（多进程模式下不适用）
             'prefix' => 'mcp-',
             'ttl' => 86400,
         ],
@@ -93,8 +114,9 @@ return [
                 'process' => [
                     'enable' => true,
                     'port' => 8000,
-                    'count' => 1,
-                    'eventloop' => '',
+                    'count' => cpu_count() * 4,
+                    'eventloop' => event_loop(),
+                    'reusePort' => true,
                 ],
             ],
         ],
