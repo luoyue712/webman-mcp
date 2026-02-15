@@ -47,9 +47,7 @@ jobs:
         run: composer require revolt/event-loop
 
       - name: Start conformance server
-        run: |
-          php tests/Conformance/server.php start -d
-          timeout 15 bash -c 'until curl -s http://localhost:8000/mcp; do sleep 0.5; done'
+        run: php tests/Conformance/server.php start -d
 
       - uses: modelcontextprotocol/conformance@v0.1.14
         with:
