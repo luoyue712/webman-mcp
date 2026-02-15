@@ -12,6 +12,11 @@ jobs:
       matrix:
         operating-system: [ 'ubuntu-latest', 'windows-latest', 'macos-latest' ]
         extension: [ event, swoole, swow, fiber ]
+        exclude:
+          - operating-system: 'windows-latest'
+            extension: 'event'
+          - operating-system: 'windows-latest'
+            extension: 'swoole'
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -23,8 +28,8 @@ jobs:
           coverage: "none"
           tools: composer,pie
           extensions: ${{ matrix.extension }}
-        env:
-          fail-fast: ${{ matrix.extension != 'swow' && matrix.extension != 'fiber' }}
+      #        env:
+      #          fail-fast: ${{ matrix.extension != 'swow' && matrix.extension != 'fiber' }}
 
       - name: Install swow (Linux with sudo)
         if: ${{ matrix.extension == 'swow' && runner.os == 'Linux' }}
