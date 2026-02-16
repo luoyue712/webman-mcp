@@ -7,24 +7,57 @@ permissions:
 
 jobs:
   conformance:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.operating-system }}
+    strategy:
+      matrix:
+        operating-system: [ 'ubuntu-latest', 'macos-latest' ] # 'windows-latest',
+        extension: [ pcntl, event, ev, swoole, swow, fiber ]
+        exclude:
+          - operating-system: 'windows-latest'
+            extension: 'event'
+          - operating-system: 'windows-latest'
+            extension: 'swoole'
     steps:
       - name: Checkout
         uses: actions/checkout@v6
 
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          coverage: "none"
+          tools: composer,pie
+          extensions: ${{ matrix.extension }}, fileinfo
+        env:
+          fail-fast: ${{ matrix.extension != 'swow' && matrix.extension != 'fiber' }}
+
+      - name: Install swow (Linux with sudo)
+        if: ${{ matrix.extension == 'swow' && runner.os == 'Linux' }}
+        run: sudo pie install swow/swow-extension
+
+      - name: Install swow (Windows/macOS)
+        if: ${{ matrix.extension == 'swow' && (runner.os == 'Windows' || runner.os == 'macOS') }}
+        run: pie install swow/swow-extension
+
       - name: Install Composer
         uses: ramsey/composer-install@v3
 
-      - name: Start conformance server
-        run: php tests/Conformance/server.php start -d
+      - name: Install revolt
+        if: ${{ matrix.extension == 'fiber' }}
+        run: composer require revolt/event-loop
 
-      - uses: modelcontextprotocol/conformance@v0.1.11
+      - name: Start conformance server
+        run: php tests/Conformance/server.php start -d &
+
+      - uses: modelcontextprotocol/conformance@v0.1.14
         with:
+          node-version: 22
           mode: server
           suite: all
           verbose: true
+          output-dir: ./results
           url: http://localhost:8000/mcp
-          expected-failures: ./tests/Conformance/conformance-baseline.yml # optional
+          expected-failures: ./tests/Conformance/conformance-baseline.yml
 
       # - name: Upload conformance results
       #   if: always()
