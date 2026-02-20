@@ -8,7 +8,7 @@ use Luoyue\WebmanMcp\Event\WebmanEvent;
 use Luoyue\WebmanMcp\Server\StreamableHttpTransport;
 use Mcp\Server;
 use Mcp\Server\Session\InMemorySessionStore;
-use Mcp\Server\Session\Psr16StoreSession;
+use Mcp\Server\Session\Psr16SessionStore;
 use Mcp\Server\Transport\StdioTransport;
 use Mcp\Server\Transport\TransportInterface;
 use Nyholm\Psr7\ServerRequest;
@@ -67,7 +67,7 @@ final class McpServerManager
 
             $sessionConfig = $config['session'];
             $config['session'] = $sessionConfig['store'] === null ? Container::get(InMemorySessionStore::class) :
-                new Psr16StoreSession(
+                new Psr16SessionStore(
                     Cache::store($sessionConfig['store']),
                     $sessionConfig['prefix'] ?? 'mcp-',
                     $sessionConfig['ttl'] ?? 3600
