@@ -15,7 +15,6 @@ use Psr\Log\LoggerInterface;
 use support\Context;
 use Symfony\Component\Uid\Uuid;
 use Workerman\Connection\TcpConnection;
-use Workerman\Coroutine;
 use Workerman\Protocols\Http\ServerSentEvents;
 use Workerman\Timer;
 
@@ -95,7 +94,7 @@ class StreamableHttpTransport extends BaseStreamableHttpTransport
             }
         };
 
-        Coroutine::isCoroutine() ? Coroutine::defer($callback) : Timer::delay(0.000001, $callback);
+        Timer::delay(0.000001, $callback);
         $response = $this->responseFactory->createResponse(200)
             ->withHeader('Content-Type', 'text/event-stream')
             ->withHeader('Cache-Control', 'no-cache')

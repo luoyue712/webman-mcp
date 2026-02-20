@@ -19,10 +19,15 @@ Config::load(__DIR__ . '/config', ['app', 'mcp']);
 $mcpServerManager = new McpServerManager();
 McpServerManager::loadConfig();
 
-$process = McpProcessRunner::create()['conformance'];
+$name = 'conformance';
+$process = McpProcessRunner::create()[$name];
 $handler = new $process['handler'];
 
 $worker = new Worker($process['listen']);
+$worker->name = $name;
+$worker->count = $process['count'] ?? 1;
+$worker->eventLoop = $process['eventloop'] ?? '';
+$worker->reusePort = $process['reusePort'] ?? false;
 $worker->onWorkerStart = fn () => Http::requestClass(Request::class);
 $worker->onMessage = [$handler, 'onMessage'];
 
