@@ -36,7 +36,7 @@ return [
                 tools: true,
                 toolsListChanged: WebmanEvent::installed(),
                 resources: true,
-                resourcesSubscribe: false,
+                resourcesSubscribe: true,
                 resourcesListChanged: WebmanEvent::installed(),
                 prompts: true,
                 promptsListChanged: WebmanEvent::installed(),
