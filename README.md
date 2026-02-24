@@ -19,10 +19,7 @@
 ## 安装
 
 ```bash
-# 稳定版本
 composer require luoyue/webman-mcp
-# 开发预览版本
-composer require luoyue/webman-mcp:^dev-master mcp/sdk:^dev-main
 ```
 
 ### 环境要求
