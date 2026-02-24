@@ -11,6 +11,7 @@ use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
+use Psr\Http\Server\MiddlewareInterface;
 use Psr\Log\LoggerInterface;
 use support\Context;
 use Symfony\Component\Uid\Uuid;
@@ -24,6 +25,7 @@ class StreamableHttpTransport extends BaseStreamableHttpTransport
 
     /**
      * @param array<string, string> $corsHeaders
+     * @param iterable<MiddlewareInterface> $middleware
      */
     public function __construct(
         public readonly ServerRequestInterface $request,
@@ -31,11 +33,12 @@ class StreamableHttpTransport extends BaseStreamableHttpTransport
         private ?StreamFactoryInterface $streamFactory = null,
         array $corsHeaders = [],
         ?LoggerInterface $logger = null,
+        iterable $middleware = [],
     ) {
         $this->connection = $request->getAttribute(TcpConnection::class);
         $this->responseFactory = $responseFactory ?? Psr17FactoryDiscovery::findResponseFactory();
         $this->streamFactory = $streamFactory ?? Psr17FactoryDiscovery::findStreamFactory();
-        parent::__construct($request, $responseFactory, $streamFactory, $corsHeaders, $logger);
+        parent::__construct($request, $responseFactory, $streamFactory, $corsHeaders, $logger, $middleware);
     }
 
     protected function createStreamedResponse(): ResponseInterface

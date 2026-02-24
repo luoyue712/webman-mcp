@@ -78,6 +78,10 @@ return [
                 'headers' => [
 
                 ],
+                // PSR-15中间件
+                'middleware' => [
+
+                ],
                 // 启用后将mcp端点注入到您的路由中
                 'router' => [
                     'enable' => true,
