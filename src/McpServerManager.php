@@ -141,7 +141,9 @@ final class McpServerManager
     private function handleHttpRequest(Server $server, string $serviceName): Response
     {
         $config = $this->getServiceConfig($serviceName);
-        $headers = $config['transport']['streamable_http']['headers'] ?? [];
+        $transportConfig = $config['transport']['streamable_http'] ?? [];
+        $headers = $transportConfig['headers'] ?? [];
+        $middleware = $transportConfig['middleware'] ?? [];
 
         request()->plugin = 'luoyue.webman-mcp';
         $request = new ServerRequest(
@@ -155,7 +157,7 @@ final class McpServerManager
         $request = $request->withAttribute(TcpConnection::class, request()->connection);
 
         Context::set('McpServerRequest', true);
-        $transport = new StreamableHttpTransport(request: $request, corsHeaders: $headers, logger: $config['logger']);
+        $transport = new StreamableHttpTransport(request: $request, corsHeaders: $headers, logger: $config['logger'], middleware: $middleware);
         self::$transports[$transport] = time();
 
         /** @var ResponseInterface $response */
