@@ -51,7 +51,7 @@ jobs:
       - name: Start conformance server
         run: php tests/Conformance/server.php start -d &
 
-      - uses: modelcontextprotocol/conformance@v0.1.14
+      - uses: modelcontextprotocol/conformance@v0.1.16
         with:
           node-version: 22
           mode: server
