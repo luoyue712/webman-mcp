@@ -14,6 +14,8 @@ jobs:
         extension: [ pcntl, event, ev, swoole, swow, fiber ]
         exclude:
           - operating-system: 'windows-latest'
+            extension: 'pcntl'
+          - operating-system: 'windows-latest'
             extension: 'event'
           - operating-system: 'windows-latest'
             extension: 'swoole'
