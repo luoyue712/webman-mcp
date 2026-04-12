@@ -5,6 +5,7 @@ namespace Luoyue\WebmanMcp\Server;
 use Http\Discovery\Psr17FactoryDiscovery;
 use const JSON_THROW_ON_ERROR;
 use JsonException;
+use Luoyue\WebmanMcp\McpHelper;
 use Mcp\Schema\JsonRpc\Error;
 use Mcp\Server\Transport\StreamableHttpTransport as BaseStreamableHttpTransport;
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -86,8 +87,12 @@ class StreamableHttpTransport extends BaseStreamableHttpTransport
                     }
 
                     if (!$resumed) {
-                        Timer::delay(0.1, $callback, [true]);
-                        return;
+                        if (McpHelper::is_coroutine()) {
+                            Timer::sleep(0.1);
+                        } else {
+                            Timer::delay(0.1, $callback, [true]);
+                            return;
+                        }
                     } // Prevent tight loop
                 }
 
