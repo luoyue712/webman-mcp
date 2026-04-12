@@ -21,6 +21,7 @@ final class McpStdioCommand extends Command
 
     public function __invoke(InputInterface $input, OutputInterface $output, ?string $service = null): int
     {
+        $_ENV['MCP_STDIO'] = true;
         $service ??= $input->getArgument('service');
         /** @var McpServerManager $mcpServerManager */
         $mcpServerManager = Container::get(McpServerManager::class);
