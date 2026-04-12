@@ -19,7 +19,7 @@ final class McpInspectorCommand extends Command
         $this->addArgument('service', InputArgument::OPTIONAL, 'Service name');
     }
 
-    public function __invoke(InputInterface $input, OutputInterface $output, ?string $service = null): int
+    public function execute(InputInterface $input, OutputInterface $output, ?string $service = null): int
     {
         $service ??= $input->getArgument('service');
         $style = new SymfonyStyle($input, $output);

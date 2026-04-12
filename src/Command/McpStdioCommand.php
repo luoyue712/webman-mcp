@@ -19,7 +19,7 @@ final class McpStdioCommand extends Command
         $this->addArgument('service', InputArgument::REQUIRED, 'Service name');
     }
 
-    public function __invoke(InputInterface $input, OutputInterface $output, ?string $service = null): int
+    public function execute(InputInterface $input, OutputInterface $output, ?string $service = null): int
     {
         $_ENV['MCP_STDIO'] = true;
         $service ??= $input->getArgument('service');

@@ -20,7 +20,7 @@ final class McpMakeCommand extends Command
         $this->addArgument('type', InputArgument::OPTIONAL, 'Type name');
     }
 
-    public function __invoke(
+    public function execute(
         InputInterface $input,
         OutputInterface $output,
         ?string $type = null,
