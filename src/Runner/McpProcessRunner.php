@@ -22,9 +22,8 @@ final class McpProcessRunner implements McpRunnerInterface
     public static function create(): array
     {
         $process = [];
-        $mcpServerManager = new McpServerManager();
-        foreach ($mcpServerManager->getServiceNames() as $name) {
-            $config = $mcpServerManager->getServiceConfig($name);
+        $mcpServerManager = McpServerManager::loadConfig();
+        foreach ($mcpServerManager as $name => $config) {
             $httpConfig = $config['transport']['streamable_http'];
             $processConfig = $httpConfig['process'] ?? [];
             if ($processConfig['enable'] ?? false) {

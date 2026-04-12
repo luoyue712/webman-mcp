@@ -38,14 +38,18 @@ final class McpServerManager
         self::$transports ??= new WeakMap();
     }
 
-    public static function loadConfig(): void
+    /**
+     * @return array<string, mixed>
+     */
+    public static function loadConfig(): array
     {
         static $isInit;
         if ($isInit) {
-            return;
+            return self::$config;
         }
         self::$config = config(self::PLUGIN_REWFIX . 'mcp', []);
         $isInit = true;
+        return self::$config;
     }
 
     /**
@@ -53,7 +57,7 @@ final class McpServerManager
      */
     public function getServiceNames(): Generator
     {
-        yield from array_keys(self::$config);
+        yield from array_keys(self::loadConfig());
     }
 
     /**
@@ -61,7 +65,7 @@ final class McpServerManager
      */
     public function getServiceConfig(string $serviceName): array
     {
-        $config = self::$config[$serviceName] ?? null;
+        $config = self::loadConfig()[$serviceName] ?? null;
         if (!$config) {
             throw new InvalidArgumentException("Mcp server [{$serviceName}] not found.");
         }
