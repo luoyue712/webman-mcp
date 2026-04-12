@@ -28,8 +28,6 @@ final class McpServerManager
 {
     public const PLUGIN_REWFIX = 'plugin.luoyue.webman-mcp.';
 
-    public static bool $isInit = false;
-
     /** @var array<string, mixed> */
     private static array $config;
 
@@ -47,7 +45,8 @@ final class McpServerManager
 
     public static function loadConfig(): void
     {
-        if (self::$isInit) {
+        static $isInit;
+        if ($isInit) {
             return;
         }
         array_walk(self::$config, function (&$config, $serviceName) {
@@ -73,7 +72,7 @@ final class McpServerManager
                     $sessionConfig['ttl'] ?? 3600
                 );
         });
-        self::$isInit = true;
+        $isInit = true;
     }
 
     /**
