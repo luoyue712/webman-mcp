@@ -30,10 +30,12 @@ composer require luoyue/webman-mcp
 
 ### 可选依赖
 
-- webman/redis
+- webman/cache（session持久化存储）
+- webman/redis（session存储到redis）
 - webman/event（用于MCP生命周期钩子）
 - Swoole/Swow/Fiber协程（提升SSE性能）
 - monolog/monolog（用于记录服务器日志）
+- guzzlehttp/guzzle（用于MCP客户端HTTP请求）
 
 ## 注解
 

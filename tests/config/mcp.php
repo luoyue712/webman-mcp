@@ -1,6 +1,7 @@
 <?php
 
 use Luoyue\WebmanMcp\Event\WebmanEvent;
+use Luoyue\WebmanMcp\Server\WebmanSessionStore;
 use Luoyue\WebmanMcp\Tests\Conformance\Elements;
 use Mcp\Schema\Content\AudioContent;
 use Mcp\Schema\Content\EmbeddedResource;
@@ -54,6 +55,7 @@ return [
                 completions: true,
                 experimental: null,
             ));
+            $server->setSession(new WebmanSessionStore('', 'mcp-', 86400));
             $server
                 // Tools
                 ->addTool(static fn() => 'This is a simple text response for testing.', 'test_simple_text', 'Tests simple text content response')
@@ -79,26 +81,6 @@ return [
                 ->addPrompt([Elements::class, 'promptWithEmbeddedResource'], 'test_prompt_with_embedded_resource', 'A prompt that includes an embedded resource')
                 ->addPrompt([Elements::class, 'promptWithImage'], 'test_prompt_with_image', 'A prompt that includes image content');
         },
-        // 服务日志，对应插件下的log配置文件，为空则不记录日志
-        'logger' => null,
-        // 服务注册配置
-        'discover' => [
-            // 注解扫描路径
-            'scan_dirs' => [
-                'app/mcp',
-            ],
-            // 排除扫描路径
-            'exclude_dirs' => [
-            ],
-            // 缓存扫描结果，cache.php中的缓存配置名称，对于webman常驻内存框架无提升并且无法及时清理缓存，建议关闭。
-            'cache' => null,
-        ],
-        // session设置
-        'session' => [
-            'store' => '', // 对应cache.php中的缓存配置名称, null为使用默认的内存缓存（多进程模式下不适用）
-            'prefix' => 'mcp-',
-            'ttl' => 86400,
-        ],
         'transport' => [
             'stdio' => [
                 'enable' => true,
@@ -106,10 +88,6 @@ return [
             'streamable_http' => [
                 // mcp端点
                 'endpoint' => '/mcp',
-                // 额外响应头，可配置CORS跨域
-                'headers' => [
-
-                ],
                 // 启用后将mcp端点注入到您的路由中
                 'router' => [
                     'enable' => true,
