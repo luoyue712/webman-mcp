@@ -74,10 +74,6 @@ return [
             'streamable_http' => [
                 // mcp端点
                 'endpoint' => '/mcp',
-                // 额外响应头，可配置CORS跨域
-                'headers' => [
-
-                ],
                 // PSR-15中间件
                 'middleware' => [
 

@@ -156,7 +156,7 @@ final class McpServerManager
         $request = $request->withAttribute(TcpConnection::class, request()->connection);
 
         Context::set('McpServerRequest', true);
-        $transport = new StreamableHttpTransport(request: $request, corsHeaders: $headers, logger: $config['logger'], middleware: $middleware);
+        $transport = new StreamableHttpTransport(request: $request, logger: $config['logger'], middleware: $middleware);
         self::$transports[$transport] = time();
 
         /** @var ResponseInterface $response */
