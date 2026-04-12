@@ -17,7 +17,8 @@
     "webman/event": "^1.0",
     "webman/database": "^2.1",
     "webman/redis": "^2.1",
-    "phpstan/phpstan": "^2.1"
+    "phpstan/phpstan": "^2.1",
+    "phpunit/phpunit": "^10.5"
   },
   "autoload": {
     "psr-4": {

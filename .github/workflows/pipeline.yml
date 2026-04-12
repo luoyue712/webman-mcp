@@ -6,7 +6,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  conformance:
+  conformance-server:
     runs-on: ${{ matrix.operating-system }}
     strategy:
       matrix:
@@ -40,7 +40,7 @@ jobs:
         run: if [ "$RUNNER_OS" = "macOS" ]; then brew install re2c; fi; sudo pie install swow/swow-extension --skip-enable-extension
 
       - name: Install Composer
-        uses: ramsey/composer-install@v3
+        uses: ramsey/composer-install@v4
 
       - name: Install revolt
         if: ${{ matrix.extension == 'fiber' }}
@@ -65,6 +65,28 @@ jobs:
       #   with:
       #     name: conformance-results
       #     path: ./results
+  unit:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: [ '8.1', '8.2', '8.3', '8.4', '8.5' ]
+        dependencies: [ 'lowest', 'highest' ]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+
+      - name: Install Composer
+        uses: ramsey/composer-install@v4
+        with:
+          dependency-versions: ${{ matrix.dependencies }}
+      - name: Tests
+        run: vendor/bin/phpunit --testsuite=unit
+
   qa:
     runs-on: ubuntu-latest
     steps:
@@ -81,7 +103,7 @@ jobs:
         run: composer validate --strict
 
       - name: Install Composer
-        uses: ramsey/composer-install@v3
+        uses: ramsey/composer-install@v4
 
       - name: Code Style PHP
         run: vendor/bin/php-cs-fixer fix --dry-run
