@@ -121,7 +121,7 @@ final class McpServerManager
         }
         $server = self::$server[$serviceName];
 
-        return isset($_ENV['SHELL_VERBOSITY']) ? $this->handleStdioMessage($server, $serviceName) : $this->handleHttpRequest($server, $serviceName);
+        return isset($_ENV['MCP_STDIO']) ? $this->handleStdioMessage($server, $serviceName) : $this->handleHttpRequest($server, $serviceName);
     }
 
     private function handleStdioMessage(Server $server, string $serviceName): int
