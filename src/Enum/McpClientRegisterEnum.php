@@ -16,16 +16,16 @@ enum McpClientRegisterEnum: string
     /** claude(工作区安装) */
     case CLAUDE_CODE = './.mcp.json';
 
+    /** Trae CN编辑器(工作区安装) */
+    case TRAE_IDE = './.trae/mcp.json';
+
+    /** qwen code(工作区安装) */
+    case QWEN_CODE = '.qwen/settings.json';
+
     /** claude桌面版(全局安装) */
     case CLAUDE_DESKTOP = '%APPDATA%\Claude\claude_desktop_config.json';
 
-    /** qwen code(全局安装) */
-    case QWEN_CODE = '%USERPROFILE%/.qwen/settings.json';
-
-    /** Trae CN编辑器(全局安装) */
-    case TRAE_IDE = '%APPDATA%/Trae CN/User/mcp.json';
-
-    /** 通义灵码编辑器(工作区安装) */
+    /** 通义灵码编辑器(全局安装) */
     case LINGMA_IDE = '%APPDATA%/Lingma/SharedClientCache/lingma_mcp.json';
 
     /** 通义灵码插件(全局安装) */
