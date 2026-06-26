@@ -10,9 +10,11 @@ jobs:
     runs-on: ${{ matrix.operating-system }}
     strategy:
       matrix:
-        operating-system: [ 'ubuntu-latest', 'macos-latest' ] # 'windows-latest',
+        operating-system: [ 'ubuntu-latest', 'windows-latest', 'macos-latest' ]
         extension: [ pcntl, event, ev, swoole, swow, fiber ]
         exclude:
+          - operating-system: 'windows-latest'
+            extension: 'pcntl'
           - operating-system: 'windows-latest'
             extension: 'event'
           - operating-system: 'windows-latest'
@@ -49,7 +51,7 @@ jobs:
       - name: Start conformance server
         run: php tests/Conformance/server.php start -d &
 
-      - uses: modelcontextprotocol/conformance@v0.1.14
+      - uses: modelcontextprotocol/conformance@0.2.0-alpha.7
         with:
           node-version: 22
           mode: server
