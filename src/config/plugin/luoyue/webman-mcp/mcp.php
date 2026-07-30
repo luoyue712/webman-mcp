@@ -11,6 +11,7 @@ use Mcp\Schema\Icon;
 use Mcp\Schema\ServerCapabilities;
 use Mcp\Server\Builder;
 use Mcp\Server\Session\FileSessionStore;
+use Mcp\Server\Transport\Http\Middleware\CorsMiddleware;
 use support\Log;
 
 return [
@@ -76,7 +77,8 @@ return [
                 'endpoint' => '/mcp',
                 // PSR-15中间件
                 'middleware' => [
-
+                    // cors跨域中间件
+                    new CorsMiddleware(allowedOrigins: ['*']),
                 ],
                 // 启用后将mcp端点注入到您的路由中
                 'router' => [

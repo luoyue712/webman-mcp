@@ -11,6 +11,7 @@ use Mcp\Schema\Enum\ProtocolVersion;
 use Mcp\Schema\Result\CallToolResult;
 use Mcp\Schema\ServerCapabilities;
 use Mcp\Server\Builder;
+use Mcp\Server\Transport\Http\Middleware\DnsRebindingProtectionMiddleware;
 use Workerman\Events\Fiber;
 use Workerman\Events\Swoole;
 use Workerman\Events\Swow;
@@ -91,6 +92,10 @@ return [
                 // 启用后将mcp端点注入到您的路由中
                 'router' => [
                     'enable' => true,
+                ],
+                // PSR-15中间件，如果使用空数组则没有中间件，如果为null则使用sdk默认中间件
+                'middleware' => [
+                    new DnsRebindingProtectionMiddleware(),
                 ],
                 // 额外的自定义进程配置（与process.php配置相同）使用port代替listen
                 'process' => [

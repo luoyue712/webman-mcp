@@ -22,16 +22,16 @@ class DevelopmentMcpLoader implements LoaderInterface
 
         $state = $discoverer->discover(base_path(), ['vendor/luoyue/webman-mcp/src/DevMcp', ...$this->path], []);
         foreach ($state->getTools() as $tool) {
-            $registry->registerTool($tool->tool, $tool->handler, true);
+            $registry->registerTool($tool->tool, $tool->handler);
         }
         foreach ($state->getPrompts() as $prompt) {
-            $registry->registerPrompt($prompt->prompt, $prompt->handler, $prompt->completionProviders, true);
+            $registry->registerPrompt($prompt->prompt, $prompt->handler, $prompt->completionProviders);
         }
         foreach ($state->getResources() as $resource) {
-            $registry->registerResource($resource->resource, $resource->handler, true);
+            $registry->registerResource($resource->resource, $resource->handler);
         }
         foreach ($state->getResourceTemplates() as $resource) {
-            $registry->registerResourceTemplate($resource->resourceTemplate, $resource->handler, $resource->completionProviders, true);
+            $registry->registerResourceTemplate($resource->resourceTemplate, $resource->handler, $resource->completionProviders);
         }
     }
 }

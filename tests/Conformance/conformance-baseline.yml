@@ -1,3 +1,2 @@
 server:
   - json-schema-2020-12
-  - dns-rebinding-protection
