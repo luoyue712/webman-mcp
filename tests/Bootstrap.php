@@ -4,7 +4,7 @@ use Webman\Config;
 
 ini_set('display_errors', 'on');
 error_reporting(E_ALL);
-const BASE_PATH = __DIR__;
+defined('BASE_PATH') || define('BASE_PATH', __DIR__);
 
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 

@@ -27,10 +27,13 @@ final class McpMakeCommand extends Command
     ): int {
         $type ??= $input->getArgument('type');
         $style = new SymfonyStyle($input, $output);
+        if (!\in_array($type, ['config', 'template'], true)) {
+            $style->error('Please specify a type name');
+            return Command::INVALID;
+        }
         return match ($type) {
             'config' => $this->makeConfig($style),
             'template' => $this->makeTemplate($style),
-            default => $style->error('Please specify a type name') * 0 + Command::INVALID,
         };
     }
 
@@ -103,6 +106,7 @@ final class McpMakeCommand extends Command
         $sessionStore = match ($questions['session_store']) {
             'webman' => sprintf('new \Luoyue\WebmanMcp\Server\WebmanSessionStore(\'%s\', \'mcp-\', %s)', '', $questions['session_ttl']),
             'file' => sprintf('new \Luoyue\WebmanMcp\Server\FileSessionStore(runtime_path(\'/mcp/session\'), %s)', $questions['session_ttl']),
+            default => throw new \InvalidArgumentException('Invalid session store type'),
         };
 
         $template = <<<EOF
