@@ -23,23 +23,23 @@ use Workerman\Timer;
 class StreamableHttpTransport extends BaseStreamableHttpTransport
 {
     private readonly TcpConnection $connection;
+    private ResponseFactoryInterface $responseFactory;
+    private StreamFactoryInterface $streamFactory;
 
     /**
-     * @param array<string, string> $corsHeaders
-     * @param iterable<MiddlewareInterface> $middleware
+     * @param iterable<MiddlewareInterface>|null $middleware null 使用 SDK 默认中间件
      */
     public function __construct(
         public readonly ServerRequestInterface $request,
-        private ?ResponseFactoryInterface $responseFactory = null,
-        private ?StreamFactoryInterface $streamFactory = null,
-        array $corsHeaders = [],
+        ?ResponseFactoryInterface $responseFactory = null,
+        ?StreamFactoryInterface $streamFactory = null,
         ?LoggerInterface $logger = null,
-        iterable $middleware = [],
+        ?iterable $middleware = null,
     ) {
         $this->connection = $request->getAttribute(TcpConnection::class);
         $this->responseFactory = $responseFactory ?? Psr17FactoryDiscovery::findResponseFactory();
         $this->streamFactory = $streamFactory ?? Psr17FactoryDiscovery::findStreamFactory();
-        parent::__construct($request, $responseFactory, $streamFactory, $corsHeaders, $logger, $middleware);
+        parent::__construct($request, $responseFactory, $streamFactory, $logger, $middleware);
     }
 
     protected function createStreamedResponse(): ResponseInterface
@@ -114,7 +114,7 @@ class StreamableHttpTransport extends BaseStreamableHttpTransport
             $response = $response->withHeader('Mcp-Session-Id', $this->sessionId->toRfc4122());
         }
 
-        return $this->withCorsHeaders($response);
+        return $response;
     }
 
     protected function handleFiberTermination(): void
