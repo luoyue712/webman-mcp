@@ -1,11 +1,17 @@
 <?php
 
 use Luoyue\WebmanMcp\Event\WebmanEvent;
+use Luoyue\WebmanMcp\McpServerManager;
 use Luoyue\WebmanMcp\Server\DevelopmentMcpLoader;
+use Luoyue\WebmanMcp\Server\WebmanDiscoverer;
+use Luoyue\WebmanMcp\Server\WebmanSessionStore;
+use Mcp\Capability\Registry\Loader\DiscoveryLoader;
 use Mcp\Schema\Enum\ProtocolVersion;
 use Mcp\Schema\Icon;
 use Mcp\Schema\ServerCapabilities;
 use Mcp\Server\Builder;
+use Mcp\Server\Session\FileSessionStore;
+use support\Log;
 
 return [
     'mcp' => [
@@ -44,29 +50,23 @@ return [
                 completions: true,
                 experimental: null,
             ));
+            // 记录内部的服务日志，默认使用当前目录的log.php，如果不记录可以删除这行。
+            $server->setLogger(Log::channel(McpServerManager::PLUGIN_REWFIX . 'mcp_error_stderr'));
+            // session设置(依赖webman/cache)
+            //            $server->setSession(new WebmanSessionStore('', 'mcp-', 86400));
+            // session设置(内置文件存储，无依赖)
+            $server->setSession(new FileSessionStore(runtime_path('/mcp/session'), 86400));
+            // 注解扫描配置
+            $server->addLoader(new DiscoveryLoader(
+                base_path(),
+                ['app/mcp'],// 注解扫描路径
+                [],// 排除扫描路径
+                new WebmanDiscoverer()
+            )
+            );
             // 添加开发环境工具，仅debug模式下启用
             config('app.debug') && $server->addLoader(new DevelopmentMcpLoader);
         },
-        // 服务日志，对应插件下的log配置文件，为空则不记录日志
-        'logger' => null,
-        // 服务注册配置
-        'discover' => [
-            // 注解扫描路径
-            'scan_dirs' => [
-                'app/mcp',
-            ],
-            // 排除扫描路径
-            'exclude_dirs' => [
-            ],
-            // 缓存扫描结果，cache.php中的缓存配置名称，对于webman常驻内存框架无提升并且无法及时清理缓存，建议关闭。
-            'cache' => null,
-        ],
-        // session设置
-        'session' => [
-            'store' => '', // 对应cache.php中的缓存配置名称, null为使用默认的内存缓存（多进程模式下不适用）
-            'prefix' => 'mcp-',
-            'ttl' => 86400,
-        ],
         'transport' => [
             'stdio' => [
                 'enable' => true,
@@ -74,10 +74,6 @@ return [
             'streamable_http' => [
                 // mcp端点
                 'endpoint' => '/mcp',
-                // 额外响应头，可配置CORS跨域
-                'headers' => [
-
-                ],
                 // PSR-15中间件
                 'middleware' => [
 

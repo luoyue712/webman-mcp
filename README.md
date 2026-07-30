@@ -30,10 +30,12 @@ composer require luoyue/webman-mcp
 
 ### 可选依赖
 
-- webman/redis
+- webman/cache（session持久化存储）
+- webman/redis（session存储到redis）
 - webman/event（用于MCP生命周期钩子）
 - Swoole/Swow/Fiber协程（提升SSE性能）
 - monolog/monolog（用于记录服务器日志）
+- guzzlehttp/guzzle（用于MCP客户端HTTP请求）
 
 ## 注解
 
@@ -114,7 +116,6 @@ php webman mcp:list
 
 |  类别  |          名称           | 描述                               |
 |:----:|:---------------------:|:---------------------------------|
-| tool |  sequential_thinking  | 让ai进入深度思考                        |
 | tool |      system_info      | 获取webman框架信息，php版本信息，系统信息，是否使用协程 |
 | tool |      get_config       | 获取config配置信息                     |
 | tool |        get_env        | 获取env环境变量信息                      |

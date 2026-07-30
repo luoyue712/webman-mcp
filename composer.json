@@ -5,16 +5,16 @@
   "description": "Webman plugin luoyue/webman-mcp",
   "require": {
     "php": ">=8.1",
-    "mcp/sdk": "~v0.4.0",
+    "mcp/sdk": "^0.5",
     "nyholm/psr7": "^1.8",
-    "webman/console": "^2.1.12",
-    "webman/cache": "^2.1"
+    "webman/console": "^2.1.12"
   },
   "require-dev": {
     "friendsofphp/php-cs-fixer": "^3.92",
     "workerman/webman-framework": "^2.1",
     "monolog/monolog": "^3.9",
-    "webman/event": "^1.0",
+    "webman/cache": "^2.1",
+    "webman/event": "^1.0.4",
     "webman/database": "^2.1",
     "webman/redis": "^2.1",
     "phpstan/phpstan": "^2.1",

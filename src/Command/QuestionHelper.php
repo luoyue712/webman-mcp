@@ -46,7 +46,7 @@ final class QuestionHelper
                         default: $question['default'] ?? null,
                         multiSelect: $question['multi_select'] ?? false
                     );
-                    $is_enum && $answer = $question['choice'] . '::' . $question['choice']::from($answer)->name;
+                    $is_enum && $answer = $question['choice'] . '::' . $answer;
                 } else {
                     $answer = $style->ask($question['question'], $question['default'] ?? null, $validator);
                 }

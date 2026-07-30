@@ -1,6 +1,7 @@
 <?php
 
 use Luoyue\WebmanMcp\Event\WebmanEvent;
+use Luoyue\WebmanMcp\Server\WebmanSessionStore;
 use Luoyue\WebmanMcp\Tests\Conformance\Elements;
 use Mcp\Schema\Content\AudioContent;
 use Mcp\Schema\Content\EmbeddedResource;
@@ -54,46 +55,32 @@ return [
                 completions: true,
                 experimental: null,
             ));
-            $server->addTool(fn () => 'This is a simple text response for testing.', 'test_simple_text', 'Tests simple text content response')
-                ->addTool(fn () => new ImageContent(Elements::TEST_IMAGE_BASE64, 'image/png'), 'test_image_content', 'Tests image content response')
-                ->addTool(fn () => new AudioContent(Elements::TEST_AUDIO_BASE64, 'audio/wav'), 'test_audio_content', 'Tests audio content response')
-                ->addTool(fn () => EmbeddedResource::fromText('test://embedded-resource', 'This is an embedded resource content.'), 'test_embedded_resource', 'Tests embedded resource content response')
-                ->addTool([Elements::class, 'toolMultipleTypes'], 'test_multiple_content_types', 'Tests response with multiple content types')
-                ->addTool([Elements::class, 'toolWithLogging'], 'test_tool_with_logging', 'Tests tool that emits log messages')
-                ->addTool([Elements::class, 'toolWithProgress'], 'test_tool_with_progress', 'Tests tool that reports progress notifications')
-                ->addTool([Elements::class, 'toolWithSampling'], 'test_sampling', 'Tests server-initiated sampling')
-                ->addTool(fn () => CallToolResult::error([new TextContent('This tool intentionally returns an error for testing')]), 'test_error_handling', 'Tests error response handling')
+            $server->setSession(new WebmanSessionStore('', 'mcp-', 86400));
+            $server
+                // Tools
+                ->addTool(static fn() => 'This is a simple text response for testing.', name: 'test_simple_text', description: 'Tests simple text content response')
+                ->addTool(static fn() => new ImageContent(Elements::TEST_IMAGE_BASE64, 'image/png'), name: 'test_image_content', description: 'Tests image content response')
+                ->addTool(static fn() => new AudioContent(Elements::TEST_AUDIO_BASE64, 'audio/wav'), name: 'test_audio_content', description: 'Tests audio content response')
+                ->addTool(static fn() => EmbeddedResource::fromText('test://embedded-resource', 'This is an embedded resource content.'), name: 'test_embedded_resource', description: 'Tests embedded resource content response')
+                ->addTool([Elements::class, 'toolMultipleTypes'], name: 'test_multiple_content_types', description: 'Tests response with multiple content types')
+                ->addTool([Elements::class, 'toolWithLogging'], name: 'test_tool_with_logging', description: 'Tests tool that emits log messages')
+                ->addTool([Elements::class, 'toolWithProgress'], name: 'test_tool_with_progress', description: 'Tests tool that reports progress notifications')
+                ->addTool([Elements::class, 'toolWithSampling'], name: 'test_sampling', description: 'Tests server-initiated sampling')
+                ->addTool(static fn() => CallToolResult::error([new TextContent('This tool intentionally returns an error for testing')]), name: 'test_error_handling', description: 'Tests error response handling')
+                ->addTool([Elements::class, 'toolWithElicitation'], name: 'test_elicitation', description: 'Tests server-initiated elicitation')
+                ->addTool([Elements::class, 'toolWithElicitationDefaults'], name: 'test_elicitation_sep1034_defaults', description: 'Tests elicitation with default values')
+                ->addTool([Elements::class, 'toolWithElicitationEnums'], name: 'test_elicitation_sep1330_enums', description: 'Tests elicitation with enum schemas')
                 // Resources
-                ->addResource(fn () => 'This is the content of the static text resource.', 'test://static-text', 'static-text', 'A static text resource for testing')
-                ->addResource(fn () => fopen('data://image/png;base64,' . Elements::TEST_IMAGE_BASE64, 'r'), 'test://static-binary', 'static-binary', 'A static binary resource (image) for testing')
+                ->addResource(static fn() => 'This is the content of the static text resource.', 'test://static-text', 'static-text', 'A static text resource for testing')
+                ->addResource(static fn() => fopen('data://image/png;base64,' . Elements::TEST_IMAGE_BASE64, 'r'), 'test://static-binary', 'static-binary', 'A static binary resource (image) for testing')
                 ->addResourceTemplate([Elements::class, 'resourceTemplate'], 'test://template/{id}/data', 'template', 'A resource template with parameter substitution', 'application/json')
-                ->addResource(fn () => 'Watched resource content', 'test://watched-resource', 'watched-resource', 'A resource that can be watched')
+                ->addResource(static fn() => 'Watched resource content', 'test://watched-resource', 'watched-resource', 'A resource that can be watched')
                 // Prompts
-                ->addPrompt(fn () => [['role' => 'user', 'content' => 'This is a simple prompt for testing.']], 'test_simple_prompt', 'A simple prompt without arguments')
-                ->addPrompt([Elements::class, 'promptWithArguments'], 'test_prompt_with_arguments', 'A prompt with required arguments')
-                ->addPrompt([Elements::class, 'promptWithEmbeddedResource'], 'test_prompt_with_embedded_resource', 'A prompt that includes an embedded resource')
-                ->addPrompt([Elements::class, 'promptWithImage'], 'test_prompt_with_image', 'A prompt that includes image content');
+                ->addPrompt(static fn() => [['role' => 'user', 'content' => 'This is a simple prompt for testing.']], name: 'test_simple_prompt', description: 'A simple prompt without arguments')
+                ->addPrompt([Elements::class, 'promptWithArguments'], name: 'test_prompt_with_arguments', description: 'A prompt with required arguments')
+                ->addPrompt([Elements::class, 'promptWithEmbeddedResource'], name: 'test_prompt_with_embedded_resource', description: 'A prompt that includes an embedded resource')
+                ->addPrompt([Elements::class, 'promptWithImage'], name: 'test_prompt_with_image', description: 'A prompt that includes image content');
         },
-        // 服务日志，对应插件下的log配置文件，为空则不记录日志
-        'logger' => null,
-        // 服务注册配置
-        'discover' => [
-            // 注解扫描路径
-            'scan_dirs' => [
-                'app/mcp',
-            ],
-            // 排除扫描路径
-            'exclude_dirs' => [
-            ],
-            // 缓存扫描结果，cache.php中的缓存配置名称，对于webman常驻内存框架无提升并且无法及时清理缓存，建议关闭。
-            'cache' => null,
-        ],
-        // session设置
-        'session' => [
-            'store' => '', // 对应cache.php中的缓存配置名称, null为使用默认的内存缓存（多进程模式下不适用）
-            'prefix' => 'mcp-',
-            'ttl' => 86400,
-        ],
         'transport' => [
             'stdio' => [
                 'enable' => true,
@@ -101,10 +88,6 @@ return [
             'streamable_http' => [
                 // mcp端点
                 'endpoint' => '/mcp',
-                // 额外响应头，可配置CORS跨域
-                'headers' => [
-
-                ],
                 // 启用后将mcp端点注入到您的路由中
                 'router' => [
                     'enable' => true,
