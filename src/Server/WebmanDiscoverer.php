@@ -2,7 +2,6 @@
 
 namespace Luoyue\WebmanMcp\Server;
 
-use const JSON_PRETTY_PRINT;
 use Mcp\Capability\Attribute\CompletionProvider;
 use Mcp\Capability\Attribute\McpPrompt;
 use Mcp\Capability\Attribute\McpResource;
@@ -24,17 +23,11 @@ use Mcp\Exception\ExceptionInterface;
 use Mcp\Exception\RuntimeException;
 use Mcp\Schema\Prompt;
 use Mcp\Schema\PromptArgument;
-use Mcp\Schema\Resource;
+use Mcp\Schema\ResourceDefinition;
 use Mcp\Schema\ResourceTemplate;
 use Mcp\Schema\Tool;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use ReflectionAttribute;
-use ReflectionClass;
-use ReflectionException;
-use ReflectionMethod;
-use ReflectionNamedType;
-use Throwable;
 use Webman\Finder\FileInfo;
 use Webman\Finder\Finder;
 
@@ -45,6 +38,8 @@ use Webman\Finder\Finder;
  *     prompts: int,
  *     resourceTemplates: int,
  * }
+ *
+ * @internal
  */
 final class WebmanDiscoverer implements DiscovererInterface
 {
@@ -52,10 +47,9 @@ final class WebmanDiscoverer implements DiscovererInterface
         private readonly LoggerInterface $logger = new NullLogger(),
         private ?DocBlockParser $docBlockParser = null,
         private ?SchemaGeneratorInterface $schemaGenerator = null,
-    )
-    {
+    ) {
         if (!class_exists(Finder::class)) {
-            throw new RuntimeException('File-based discovery requires symfony/finder. Run: composer require symfony/finder');
+            throw new RuntimeException('File-based discovery requires webman >= 2.2.0');
         }
 
         $this->docBlockParser = $docBlockParser ?? new DocBlockParser(logger: $this->logger);
@@ -65,11 +59,12 @@ final class WebmanDiscoverer implements DiscovererInterface
     /**
      * Discover MCP elements in the specified directories and return the discovery state.
      *
-     * @param string $basePath the base path for resolving directories
-     * @param array<string> $directories list of directories (relative to base path) to scan
-     * @param array<string> $excludeDirs list of directories (relative to base path) to exclude from the scan
+     * @param string        $basePath     the base path for resolving directories
+     * @param array<string> $directories  list of directories (relative to base path) to scan
+     * @param array<string> $excludeDirs  list of directories (relative to base path) to exclude from the scan
+     * @param array<string> $namePatterns list of file name patterns for the scan. Compatible with Finder->name()
      */
-    public function discover(string $basePath, array $directories, array $excludeDirs = []): DiscoveryState
+    public function discover(string $basePath, array $directories, array $excludeDirs = [], array $namePatterns = self::DEFAULT_NAME_PATERNS): DiscoveryState
     {
         $startTime = microtime(true);
         $discoveredCount = [
@@ -78,6 +73,8 @@ final class WebmanDiscoverer implements DiscovererInterface
             'prompts' => 0,
             'resourceTemplates' => 0,
         ];
+
+        $namePatterns = !empty($namePatterns) ? $namePatterns : self::DEFAULT_NAME_PATERNS;
 
         $tools = [];
         $resources = [];
@@ -104,7 +101,7 @@ final class WebmanDiscoverer implements DiscovererInterface
 
             $finder = Finder::in($absolutePaths)
                 ->exclude($excludeDirs)
-                ->name('*.php')
+                ->name($namePatterns)
                 ->files()
                 ->psr4(true)
                 ->find();
@@ -112,8 +109,8 @@ final class WebmanDiscoverer implements DiscovererInterface
             foreach ($finder as $file) {
                 $this->processFile($file, $discoveredCount, $tools, $resources, $prompts, $resourceTemplates);
             }
-        } catch (Throwable $e) {
-            $this->logger->error('Error during file finding process for MCP discovery' . json_encode($e->getTrace(), JSON_PRETTY_PRINT), [
+        } catch (\Throwable $e) {
+            $this->logger->error('Error during file finding process for MCP discovery' . json_encode($e->getTrace(), \JSON_PRETTY_PRINT), [
                 'exception' => $e,
                 'trace' => $e->getTraceAsString(),
             ]);
@@ -134,10 +131,10 @@ final class WebmanDiscoverer implements DiscovererInterface
     /**
      * Process a single PHP file for MCP elements on classes or methods.
      *
-     * @param DiscoveredCount $discoveredCount
-     * @param array<string, ToolReference> $tools
-     * @param array<string, ResourceReference> $resources
-     * @param array<string, PromptReference> $prompts
+     * @param DiscoveredCount                          $discoveredCount
+     * @param array<string, ToolReference>             $tools
+     * @param array<string, ResourceReference>         $resources
+     * @param array<string, PromptReference>           $prompts
      * @param array<string, ResourceTemplateReference> $resourceTemplates
      */
     private function processFile(FileInfo $file, array &$discoveredCount, array &$tools, array &$resources, array &$prompts, array &$resourceTemplates): void
@@ -150,7 +147,7 @@ final class WebmanDiscoverer implements DiscovererInterface
         }
 
         try {
-            $reflectionClass = new ReflectionClass($className);
+            $reflectionClass = new \ReflectionClass($className);
 
             if ($reflectionClass->isAbstract() || $reflectionClass->isInterface() || $reflectionClass->isTrait() || $reflectionClass->isEnum()) {
                 return;
@@ -162,7 +159,7 @@ final class WebmanDiscoverer implements DiscovererInterface
                 if ($invokeMethod->isPublic() && !$invokeMethod->isStatic()) {
                     $attributeTypes = [McpTool::class, McpResource::class, McpPrompt::class, McpResourceTemplate::class];
                     foreach ($attributeTypes as $attributeType) {
-                        $classAttribute = $reflectionClass->getAttributes($attributeType, ReflectionAttribute::IS_INSTANCEOF)[0] ?? null;
+                        $classAttribute = $reflectionClass->getAttributes($attributeType, \ReflectionAttribute::IS_INSTANCEOF)[0] ?? null;
                         if ($classAttribute) {
                             $this->processMethod($invokeMethod, $discoveredCount, $classAttribute, $tools, $resources, $prompts, $resourceTemplates);
                             $processedViaClassAttribute = true;
@@ -173,7 +170,7 @@ final class WebmanDiscoverer implements DiscovererInterface
             }
 
             if (!$processedViaClassAttribute) {
-                foreach ($reflectionClass->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
+                foreach ($reflectionClass->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
                     if (
                         $method->getDeclaringClass()->getName() !== $reflectionClass->getName()
                         || $method->isStatic() || $method->isAbstract() || $method->isConstructor() || $method->isDestructor() || '__invoke' === $method->getName()
@@ -182,7 +179,7 @@ final class WebmanDiscoverer implements DiscovererInterface
                     }
                     $attributeTypes = [McpTool::class, McpResource::class, McpPrompt::class, McpResourceTemplate::class];
                     foreach ($attributeTypes as $attributeType) {
-                        $methodAttribute = $method->getAttributes($attributeType, ReflectionAttribute::IS_INSTANCEOF)[0] ?? null;
+                        $methodAttribute = $method->getAttributes($attributeType, \ReflectionAttribute::IS_INSTANCEOF)[0] ?? null;
                         if ($methodAttribute) {
                             $this->processMethod($method, $discoveredCount, $methodAttribute, $tools, $resources, $prompts, $resourceTemplates);
                             break;
@@ -190,14 +187,13 @@ final class WebmanDiscoverer implements DiscovererInterface
                     }
                 }
             }
-        } catch (ReflectionException $e) {
+        } catch (\ReflectionException $e) {
             $this->logger->error('Reflection error processing file for MCP discovery', ['file' => $file->getPathname(), 'class' => $className, 'exception' => $e]);
-        } catch (Throwable $e) {
+        } catch (\Throwable $e) {
             $this->logger->error('Unexpected error processing file for MCP discovery', [
                 'file' => $file->getPathname(),
                 'class' => $className,
                 'exception' => $e,
-                'trace' => $e->getTraceAsString(),
             ]);
         }
     }
@@ -206,15 +202,15 @@ final class WebmanDiscoverer implements DiscovererInterface
      * Process a method with a given MCP attribute instance.
      * Can be called for regular methods or the __invoke method of an invokable class.
      *
-     * @param ReflectionMethod $method The target method (e.g., regular method or __invoke).
-     * @param DiscoveredCount $discoveredCount pass by reference to update counts
-     * @param ReflectionAttribute<McpTool|McpResource|McpPrompt|McpResourceTemplate> $attribute the ReflectionAttribute instance found (on method or class)
-     * @param array<string, ToolReference> $tools
-     * @param array<string, ResourceReference> $resources
-     * @param array<string, PromptReference> $prompts
-     * @param array<string, ResourceTemplateReference> $resourceTemplates
+     * @param \ReflectionMethod                                                       $method            The target method (e.g., regular method or __invoke).
+     * @param DiscoveredCount                                                         $discoveredCount   pass by reference to update counts
+     * @param \ReflectionAttribute<McpTool|McpResource|McpPrompt|McpResourceTemplate> $attribute         the ReflectionAttribute instance found (on method or class)
+     * @param array<string, ToolReference>                                            $tools
+     * @param array<string, ResourceReference>                                        $resources
+     * @param array<string, PromptReference>                                          $prompts
+     * @param array<string, ResourceTemplateReference>                                $resourceTemplates
      */
-    private function processMethod(ReflectionMethod $method, array &$discoveredCount, ReflectionAttribute $attribute, array &$tools, array &$resources, array &$prompts, array &$resourceTemplates): void
+    private function processMethod(\ReflectionMethod $method, array &$discoveredCount, \ReflectionAttribute $attribute, array &$tools, array &$resources, array &$prompts, array &$resourceTemplates): void
     {
         $className = $method->getDeclaringClass()->getName();
         $classShortName = $method->getDeclaringClass()->getShortName();
@@ -232,15 +228,16 @@ final class WebmanDiscoverer implements DiscovererInterface
                     $inputSchema = $this->schemaGenerator->generate($method);
                     $outputSchema = $this->schemaGenerator->generateOutputSchema($method);
                     $tool = new Tool(
-                        $name,
-                        $inputSchema,
-                        $description,
-                        $instance->annotations,
-                        $instance->icons,
-                        $instance->meta,
-                        $outputSchema,
+                        name: $name,
+                        title: $instance->title,
+                        inputSchema: $inputSchema,
+                        description: $description,
+                        annotations: $instance->annotations,
+                        icons: $instance->icons,
+                        meta: $instance->meta,
+                        outputSchema: $outputSchema,
                     );
-                    $tools[$name] = new ToolReference($tool, [$className, $methodName], false);
+                    $tools[$name] = new ToolReference($tool, [$className, $methodName]);
                     ++$discoveredCount['tools'];
                     break;
 
@@ -248,9 +245,10 @@ final class WebmanDiscoverer implements DiscovererInterface
                     $docBlock = $this->docBlockParser->parseDocBlock($method->getDocComment() ?? null);
                     $name = $instance->name ?? ('__invoke' === $methodName ? $classShortName : $methodName);
                     $description = $instance->description ?? $this->docBlockParser->getDescription($docBlock) ?? null;
-                    $resource = new Resource(
+                    $resource = new ResourceDefinition(
                         $instance->uri,
                         $name,
+                        $instance->title,
                         $description,
                         $instance->mimeType,
                         $instance->annotations,
@@ -258,7 +256,7 @@ final class WebmanDiscoverer implements DiscovererInterface
                         $instance->icons,
                         $instance->meta,
                     );
-                    $resources[$instance->uri] = new ResourceReference($resource, [$className, $methodName], false);
+                    $resources[$instance->uri] = new ResourceReference($resource, [$className, $methodName]);
 
                     ++$discoveredCount['resources'];
                     break;
@@ -271,15 +269,15 @@ final class WebmanDiscoverer implements DiscovererInterface
                     $paramTags = $this->docBlockParser->getParamTags($docBlock);
                     foreach ($method->getParameters() as $param) {
                         $reflectionType = $param->getType();
-                        if ($reflectionType instanceof ReflectionNamedType && !$reflectionType->isBuiltin()) {
+                        if ($reflectionType instanceof \ReflectionNamedType && !$reflectionType->isBuiltin()) {
                             continue;
                         }
                         $paramTag = $paramTags['$' . $param->getName()] ?? null;
                         $arguments[] = new PromptArgument($param->getName(), $paramTag ? trim((string) $paramTag->getDescription()) : null, !$param->isOptional() && !$param->isDefaultValueAvailable());
                     }
-                    $prompt = new Prompt($name, $description, $arguments, $instance->icons, $instance->meta);
+                    $prompt = new Prompt($name, $instance->title, $description, $arguments, $instance->icons, $instance->meta);
                     $completionProviders = $this->getCompletionProviders($method);
-                    $prompts[$name] = new PromptReference($prompt, [$className, $methodName], false, $completionProviders);
+                    $prompts[$name] = new PromptReference($prompt, [$className, $methodName], $completionProviders);
                     ++$discoveredCount['prompts'];
                     break;
 
@@ -290,32 +288,38 @@ final class WebmanDiscoverer implements DiscovererInterface
                     $mimeType = $instance->mimeType;
                     $annotations = $instance->annotations;
                     $meta = $instance->meta ?? null;
-                    $resourceTemplate = new ResourceTemplate($instance->uriTemplate, $name, $description, $mimeType, $annotations, $meta);
+                    $resourceTemplate = new ResourceTemplate($instance->uriTemplate, $name, $instance->title, $description, $mimeType, $annotations, $meta);
                     $completionProviders = $this->getCompletionProviders($method);
-                    $resourceTemplates[$instance->uriTemplate] = new ResourceTemplateReference($resourceTemplate, [$className, $methodName], false, $completionProviders);
+                    $resourceTemplates[$instance->uriTemplate] = new ResourceTemplateReference($resourceTemplate, [$className, $methodName], $completionProviders);
                     ++$discoveredCount['resourceTemplates'];
                     break;
             }
         } catch (ExceptionInterface $e) {
-            $this->logger->error("Failed to process MCP attribute on {$className}::{$methodName}", ['attribute' => $attributeClassName, 'exception' => $e, 'trace' => $e->getPrevious() ? $e->getPrevious()->getTraceAsString() : $e->getTraceAsString()]);
-        } catch (Throwable $e) {
-            $this->logger->error("Unexpected error processing attribute on {$className}::{$methodName}", ['attribute' => $attributeClassName, 'exception' => $e, 'trace' => $e->getTraceAsString()]);
+            $this->logger->error("Failed to process MCP attribute on {$className}::{$methodName}", [
+                'attribute' => $attributeClassName,
+                'exception' => $e,
+            ]);
+        } catch (\Throwable $e) {
+            $this->logger->error("Unexpected error processing attribute on {$className}::{$methodName}", [
+                'attribute' => $attributeClassName,
+                'exception' => $e,
+            ]);
         }
     }
 
     /**
      * @return array<string, string|ProviderInterface>
      */
-    private function getCompletionProviders(ReflectionMethod $reflectionMethod): array
+    private function getCompletionProviders(\ReflectionMethod $reflectionMethod): array
     {
         $completionProviders = [];
         foreach ($reflectionMethod->getParameters() as $param) {
             $reflectionType = $param->getType();
-            if ($reflectionType instanceof ReflectionNamedType && !$reflectionType->isBuiltin()) {
+            if ($reflectionType instanceof \ReflectionNamedType && !$reflectionType->isBuiltin()) {
                 continue;
             }
 
-            $completionAttributes = $param->getAttributes(CompletionProvider::class, ReflectionAttribute::IS_INSTANCEOF);
+            $completionAttributes = $param->getAttributes(CompletionProvider::class, \ReflectionAttribute::IS_INSTANCEOF);
             if (!empty($completionAttributes)) {
                 $attributeInstance = $completionAttributes[0]->newInstance();
 
