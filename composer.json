@@ -14,7 +14,7 @@
     "workerman/webman-framework": "^2.1",
     "monolog/monolog": "^3.9",
     "webman/cache": "^2.1",
-    "webman/event": "^1.0",
+    "webman/event": "^1.0.4",
     "webman/database": "^2.1",
     "webman/redis": "^2.1",
     "phpstan/phpstan": "^2.1",
