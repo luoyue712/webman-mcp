@@ -24,7 +24,8 @@ class System
 {
     #[McpTool(
         name: 'system_info',
-        description: '获取webman框架信息，php版本信息，系统信息，是否使用协程等',
+        title: '获取webman框架信息，php版本信息，系统信息，是否使用协程等',
+        description: '获取服务器操作系统、PHP版本、PHP二进制路径、Workerman/webman版本、事件循环驱动及协程状态等系统环境信息',
         outputSchema: [
             'type' => 'object',
             'properties' => [
@@ -61,7 +62,8 @@ class System
 
     #[McpTool(
         name: 'list_dependence',
-        description: '获取当前项目已安装依赖列表',
+        title: '获取当前项目已安装依赖列表',
+        description: '获取当前项目所有已安装的Composer依赖包信息，包括版本号、类型、安装路径、源码引用等',
         outputSchema: [
             'type' => 'object',
             'properties' => [
@@ -111,7 +113,8 @@ class System
      */
     #[McpTool(
         name: 'list_extensions',
-        description: '获取当前环境已加载的php扩展以及扩展函数列表',
+        title: '获取当前环境已加载的PHP扩展及扩展函数列表',
+        description: '获取当前PHP环境已加载的所有扩展及其提供的函数列表，以扩展名为键、函数数组为值',
         outputSchema: [
             'type' => 'object',
         ]
@@ -125,7 +128,8 @@ class System
 
     #[McpTool(
         name: 'get_php_ini',
-        description: '获取php配置信息',
+        title: '获取PHP配置信息',
+        description: '获取PHP配置文件(php.ini)中的所有配置项及其当前值，可按扩展名筛选',
         outputSchema: [
             'type' => 'object',
         ]
@@ -140,7 +144,8 @@ class System
 
     #[McpTool(
         name: 'get_config',
-        description: '获取应用程序配置',
+        title: '获取应用程序配置',
+        description: '通过配置路径获取应用程序的配置值，支持点号分隔的层级访问（如 "database.default"）',
         outputSchema: [
             'type' => 'object',
         ]
@@ -155,7 +160,8 @@ class System
 
     #[McpTool(
         name: 'list_routes',
-        description: '获取路由列表',
+        title: '获取路由列表',
+        description: '获取应用程序中所有已注册的路由及其请求方法、URI、回调处理器、中间件等信息',
         outputSchema: [
             'type' => 'object',
             'properties' => [
@@ -197,7 +203,8 @@ class System
 
     #[McpTool(
         name: 'match_routes',
-        description: '匹配url对应的路由信息',
+        title: '匹配URL对应的路由信息',
+        description: '根据URL路径和请求方法匹配对应的路由，返回匹配到的控制器、插件、动作及路由参数',
         outputSchema: [
             'type' => 'object',
             'properties' => [
@@ -276,7 +283,8 @@ class System
 
     #[McpTool(
         name: 'list_events',
-        description: '获取事件列表',
+        title: '获取事件列表',
+        description: '获取所有已注册的webman事件及对应的回调函数列表',
         outputSchema: [
             'type' => 'object',
             'items' => [
@@ -311,7 +319,8 @@ class System
 
     #[McpTool(
         name: 'get_env',
-        description: '获取应用程序环境变量',
+        title: '获取应用程序环境变量',
+        description: '获取应用程序的环境变量值，可按名称获取单个变量，不传参则获取全部环境变量',
         outputSchema: [
             'type' => 'object',
             'anyOf' => [
@@ -331,7 +340,8 @@ class System
 
     #[McpTool(
         name: 'eval_code',
-        description: '在当前进程中执行php代码',
+        title: '在当前进程中执行PHP代码',
+        description: '在当前服务进程中动态执行PHP代码并返回输出结果。注意：declare语句会被自动移除，class需用条件判断包裹。此操作有安全风险，请谨慎使用',
         outputSchema: [
             'type' => 'object',
             'properties' => [
@@ -361,7 +371,8 @@ class System
 
     #[McpTool(
         name: 'build_phar',
-        description: '将项目代码打包为phar文件',
+        title: '将项目代码打包为PHAR文件',
+        description: '将整个项目代码打包为PHAR归档文件，便于分发和部署',
         outputSchema: [
             'type' => 'object',
             'properties' => [
@@ -382,7 +393,8 @@ class System
 
     #[McpTool(
         name: 'build_bin',
-        description: '将项目代码打包为linux二进制可执行文件',
+        title: '将项目代码打包为Linux二进制可执行文件',
+        description: '将整个项目代码打包为Linux单文件二进制可执行程序，无需PHP环境即可独立运行',
         outputSchema: [
             'type' => 'object',
             'properties' => [
