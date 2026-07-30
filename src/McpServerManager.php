@@ -7,6 +7,7 @@ use InvalidArgumentException;
 use Luoyue\WebmanMcp\Event\WebmanEvent;
 use Luoyue\WebmanMcp\Server\StreamableHttpTransport;
 use Mcp\Server;
+use Mcp\Server\Builder;
 use Mcp\Server\Transport\StdioTransport;
 use Mcp\Server\Transport\TransportInterface;
 use Nyholm\Psr7\ServerRequest;
@@ -27,7 +28,7 @@ final class McpServerManager
     /** @var array<string, mixed> */
     private static array $config;
 
-    /** @var array<Server> */
+    /** @var array<string, array{Server, LoggerInterface|null, Builder}> */
     private static array $server = [];
 
     /** @var WeakMap<TransportInterface<mixed>, int> */
@@ -80,20 +81,30 @@ final class McpServerManager
         return self::$transports;
     }
 
-    public function start(string $serviceName): mixed
+    /**
+     * @return array{Server, LoggerInterface|null, Builder}
+     */
+    private function getServer(string $serviceName): array
     {
+        if (isset(self::$server[$serviceName])) {
+            return self::$server[$serviceName];
+        }
         self::loadConfig();
         $config = $this->getServiceConfig($serviceName);
-        if (!isset(self::$server[$serviceName])) {
-            $server = Server::builder()
-                ->setContainer(Container::instance());
-            WebmanEvent::installed() && $server->setEventDispatcher(WebmanEvent::instance());
-            isset($config['configure']) && is_callable($config['configure']) && ($config['configure'])($server);
+        $server = Server::builder()
+            ->setContainer(Container::instance());
+        WebmanEvent::installed() && $server->setEventDispatcher(WebmanEvent::instance());
+        isset($config['configure']) && is_callable($config['configure']) && ($config['configure'])($server);
 
-            $reflectionProperty = new ReflectionProperty($server, 'logger');
-            self::$server[$serviceName] = [$server->build(), $reflectionProperty->getValue($server)];
-        }
-        [$server, $logger] = self::$server[$serviceName];
+        $reflectionProperty = new ReflectionProperty($server, 'logger');
+        self::$server[$serviceName] = [$server->build(), $reflectionProperty->getValue($server), $server];
+
+        return self::$server[$serviceName];
+    }
+
+    public function start(string $serviceName): mixed
+    {
+        [$server, $logger] = $this->getServer($serviceName);
 
         return isset($_ENV['MCP_STDIO']) ?
             $this->handleStdioMessage($server, $serviceName, $logger) : $this->handleHttpRequest($server, $serviceName, $logger);

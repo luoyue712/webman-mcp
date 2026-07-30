@@ -42,7 +42,7 @@ class System
             'required' => ['server_os', 'server_uname', 'php_version', 'php_binary', 'php_sapi_name', 'workerman_version', 'webman_version', 'event_loop_class', 'is_coroutine', 'default_temp_dir'],
         ]
     )]
-    public function sequentialThinking(): array
+    public function systemInfo(): array
     {
         $event_loop = Worker::getEventLoop()::class;
         return [

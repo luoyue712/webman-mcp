@@ -116,7 +116,6 @@ php webman mcp:list
 
 |  类别  |          名称           | 描述                               |
 |:----:|:---------------------:|:---------------------------------|
-| tool |  sequential_thinking  | 让ai进入深度思考                        |
 | tool |      system_info      | 获取webman框架信息，php版本信息，系统信息，是否使用协程 |
 | tool |      get_config       | 获取config配置信息                     |
 | tool |        get_env        | 获取env环境变量信息                      |
