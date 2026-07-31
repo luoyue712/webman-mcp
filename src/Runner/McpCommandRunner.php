@@ -6,6 +6,7 @@ use Luoyue\WebmanMcp\Command\McpInspectorCommand;
 use Luoyue\WebmanMcp\Command\McpListCommand;
 use Luoyue\WebmanMcp\Command\McpMakeCommand;
 use Luoyue\WebmanMcp\Command\McpStdioCommand;
+use Luoyue\WebmanMcp\Command\McpToolsCommand;
 use Symfony\Component\Console\Command\Command;
 
 final class McpCommandRunner implements McpRunnerInterface
@@ -15,6 +16,7 @@ final class McpCommandRunner implements McpRunnerInterface
         McpListCommand::class,
         McpMakeCommand::class,
         McpInspectorCommand::class,
+        McpToolsCommand::class,
     ];
 
     /**

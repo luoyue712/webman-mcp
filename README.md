@@ -104,6 +104,7 @@ php webman mcp:inspector mcp
 | mcp:list      |         |       MCP服务列表       |
 | mcp:make      |  type   |    生成MCP配置或模板代码     |
 | mcp:inspector | service | 启动MCP Inspector调试工具 |
+| mcp:tools     | service | 列出服务的工具/资源/提示及Schema |
 
 示例：
 
