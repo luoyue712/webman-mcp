@@ -20,9 +20,9 @@ return [
         'configure' => function (Builder $server) {
             // 设置服务信息
             $server->setServerInfo(
-                name: 'MCP Server',
-                version: '0.0.1',
-                description: 'MCP Server',
+                name: 'Webman MCP 开发服务器',
+                version: '1.0.0',
+                description: '基于 webman 框架的 MCP 服务器，内置系统信息、数据库、Redis 等开发辅助工具',
                 icons: [
                     new Icon(
                         src: 'https://manual.workerman.net/favicon.ico',
