@@ -105,12 +105,20 @@ php webman mcp:inspector mcp
 | mcp:make      |  type   |    生成MCP配置或模板代码     |
 | mcp:inspector | service | 启动MCP Inspector调试工具 |
 | mcp:tools     | service | 列出服务的工具/资源/提示及Schema |
+| mcp:tools:call | service, tool-name, [json-input] | 通过JSON参数执行服务中的工具 |
 
 示例：
 
 ```shell
 ## 查看定义的mcp服务列表以及配置信息
 php webman mcp:list
+
+## 列出服务的工具/资源/提示及Schema
+php webman mcp:tools conformance
+
+## 执行服务中的工具（默认pretty输出，--format=json输出JSON）
+php webman mcp:tools:call conformance test_simple_text
+php webman mcp:tools:call conformance test_sampling '{"prompt":"hello world"}' --format=json
 ```
 
 ### MCP开发工具

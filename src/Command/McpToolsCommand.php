@@ -3,13 +3,8 @@
 namespace Luoyue\WebmanMcp\Command;
 
 use InvalidArgumentException;
+use Luoyue\WebmanMcp\Command\Trait\RegistryAccessTrait;
 use Luoyue\WebmanMcp\McpServerManager;
-use Mcp\Capability\RegistryInterface;
-use Mcp\Server;
-use Mcp\Server\Handler\Request\ListToolsHandler;
-use ReflectionMethod;
-use ReflectionProperty;
-use RuntimeException;
 use support\Container;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -22,6 +17,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 #[AsCommand('mcp:tools', 'List registered tools, resources and prompts of a service')]
 final class McpToolsCommand extends Command
 {
+    use RegistryAccessTrait;
+
     public function configure(): void
     {
         $this->addArgument('service', InputArgument::REQUIRED, 'Service name');
@@ -149,25 +146,6 @@ final class McpToolsCommand extends Command
             ]);
         }
         $table->render();
-    }
-
-    private function getRegistry(McpServerManager $mcpServerManager, string $serviceName): RegistryInterface
-    {
-        $reflectionMethod = new ReflectionMethod($mcpServerManager, 'getServer');
-        /** @var Server $builtServer */
-        $builtServer = $reflectionMethod->invoke($mcpServerManager, $serviceName)[0];
-
-        $protocol = (new ReflectionProperty(Server::class, 'protocol'))->getValue($builtServer);
-        $requestHandlers = (new ReflectionProperty($protocol, 'requestHandlers'))->getValue($protocol);
-        foreach ($requestHandlers as $handler) {
-            if ($handler instanceof ListToolsHandler) {
-                $registry = (new ReflectionProperty(ListToolsHandler::class, 'registry'))->getValue($handler);
-                if ($registry instanceof RegistryInterface) {
-                    return $registry;
-                }
-            }
-        }
-        throw new RuntimeException("Unable to access MCP registry for service: {$serviceName}");
     }
 
     /**
