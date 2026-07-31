@@ -14,7 +14,7 @@
 - 自动注册MCP服务到主流IDE（VSCode、Cursor、通义灵码等）。
 - 支持 STDIO、Streamable HTTP 高性能传输。
 - 支持协程与非协程，从而提高了在sse场景下高性能传输。
-- 内置常用20+个MCP开发工具，提升开发效率。
+- 内置18个MCP开发工具，提升开发效率。
 
 ## 安装
 
@@ -25,17 +25,15 @@ composer require luoyue/webman-mcp
 ### 环境要求
 
 - PHP >= 8.1
-- webman^2.1
-- webman/cache^2.1
+- webman ^2.1
 
 ### 可选依赖
 
 - webman/cache（session持久化存储）
-- webman/redis（session存储到redis）
-- webman/event（用于MCP生命周期钩子）
-- Swoole/Swow/Fiber协程（提升SSE性能）
-- monolog/monolog（用于记录服务器日志）
-- guzzlehttp/guzzle（用于MCP客户端HTTP请求）
+- webman/redis（Redis开发工具）
+- webman/event（MCP生命周期钩子与列表变更通知）
+- Swoole/Swow/Fiber协程（提升SSE传输性能）
+- monolog/monolog（记录服务器日志）
 
 ## 注解
 
@@ -82,6 +80,8 @@ return [
     'enable' => true,
     // 自动注册MCP服务到ide中
     'auto_register_client' => McpClientRegisterEnum::CURSOR_IDE,
+    // 事件分发模式: dispatch或emit
+    'event_mode' => 'dispatch',
 ];
 ```
 
@@ -90,7 +90,7 @@ return [
 ### 3. 测试您的服务器
 
 ```bash
-# 使用 MCP Inspector 测试（需要node与npx）
+# 使用 MCP Inspector 测试（需要Node.js，使用npx或bunx）
 php webman mcp:inspector mcp
 ```
 
@@ -114,30 +114,32 @@ php webman mcp:list
 
 ### MCP开发工具
 
-|  类别  |          名称           | 描述                                     |
-|:----:|:---------------------:|:---------------------------------------:|
-| tool |      system_info      | 获取系统环境信息                              |
-| tool |     system_config     | 获取应用配置值                                |
-| tool |      system_env       | 获取环境变量                                 |
-| tool |    system_php_ini     | 获取PHP配置信息                              |
-| tool |  system_dependencies  | 获取项目Composer依赖列表                       |
-| tool |   system_extensions   | 获取已加载的PHP扩展及函数                        |
-| tool |     system_routes     | 获取路由列表                                 |
-| tool |  system_match_routes  | 匹配URL对应的路由                             |
-| tool |     system_events     | 获取事件列表                                 |
-| tool |   system_eval_code    | 执行PHP代码（有安全风险，请谨慎使用）                   |
-| tool |   system_build_phar   | 将项目打包为PHAR文件                           |
-| tool |   system_build_bin    | 将项目打包为Linux二进制文件                       |
-| tool | database_connections  | 获取数据库连接配置                              |
-| tool | database_execute_sql  | 执行原始SQL语句（支持参数绑定）                      |
-| tool |   redis_connections   | 获取Redis连接配置                            |
-| tool |   redis_execute_raw   | 执行原始Redis命令                            |
-| tool |   redis_execute_lua   | 执行Redis Lua脚本                          |
-| tool | redis_execute_lua_sha | 通过SHA1执行Redis Lua脚本                    |
+|  类别  |          名称           |          描述          |
+|:----:|:---------------------:|:--------------------:|
+| tool |      system_info      |       获取系统环境信息       |
+| tool |     system_config     |       获取应用配置值        |
+| tool |      system_env       |        获取环境变量        |
+| tool |    system_php_ini     |      获取PHP配置信息       |
+| tool |  system_dependencies  |   获取项目Composer依赖列表   |
+| tool |   system_extensions   |    获取已加载的PHP扩展及函数    |
+| tool |     system_routes     |        获取路由列表        |
+| tool |  system_match_routes  |      匹配URL对应的路由      |
+| tool |     system_events     |        获取事件列表        |
+| tool |   system_eval_code    | 执行PHP代码（有安全风险，请谨慎使用） |
+| tool |   system_build_phar   |     将项目打包为PHAR文件     |
+| tool |   system_build_bin    |   将项目打包为Linux二进制文件   |
+| tool | database_connections  |      获取数据库连接配置       |
+| tool | database_execute_sql  |  执行原始SQL语句（支持参数绑定）   |
+| tool |   redis_connections   |     获取Redis连接配置      |
+| tool |   redis_execute_raw   |     执行原始Redis命令      |
+| tool |   redis_execute_lua   |    执行Redis Lua脚本     |
+| tool | redis_execute_lua_sha | 通过SHA1执行Redis Lua脚本  |
 
 ## 日志记录
 
 ### 发送客户端日志
+
+> 注意：`2026-07-28`规范已废弃客户端日志（client logging），但1年内依然可用。
 
 请参考[官方文档](https://github.com/modelcontextprotocol/php-sdk/blob/main/docs/client-communication.md)
 
@@ -153,10 +155,10 @@ php webman mcp:list
 
 从以上表格中看出：
 
-- 在开发环境中使用stderr很方便的将日在控制台中且不影响运行。
+- 在开发环境中使用stderr很方便的将日志输出到控制台中且不影响运行。
 - 在生产环境中使用file记录日志可以将日志保存在磁盘中，方便后续维护。
 
-配置monolog（必须是插件目录下的log.php）：
+配置monolog日志通道（插件配置目录 `config/plugin/luoyue/webman-mcp/log.php`）：
 
 ```php
 <?php
@@ -198,14 +200,26 @@ return [
 ];
 ```
 
-然后我们可以在`mcp.php`中配置以下逻辑：
+然后在`mcp.php`的`configure`闭包中为服务器设置日志通道。`setLogger`支持任意monolog channel：
 
 ```php
-return [
-    'mcp' => [
-        'logger' => config('app.debug', true) ? 'mcp_error_stderr' : 'mcp_file_log'
-  ]
-]
+'configure' => function (\Mcp\Server\Builder $server) {
+    // ...
+    // 直接使用应用任意已配置的channel
+    $server->setLogger(\support\Log::channel('default'));
+}
+```
+
+如果使用插件自带的channel，通道名需要加上`plugin.luoyue.webman-mcp.`前缀，例如根据debug模式在stderr与文件日志之间切换：
+
+```php
+'configure' => function (\Mcp\Server\Builder $server) {
+    // ...
+    $server->setLogger(\support\Log::channel(
+        \Luoyue\WebmanMcp\McpServerManager::PLUGIN_REWFIX .
+        (config('app.debug', true) ? 'mcp_error_stderr' : 'mcp_file_log')
+    ));
+}
 ```
 
 ## 与webman的兼容问题
