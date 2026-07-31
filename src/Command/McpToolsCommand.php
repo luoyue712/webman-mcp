@@ -14,7 +14,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-#[AsCommand('mcp:tools', 'List registered tools, resources and prompts of a service')]
+#[AsCommand('mcp:tools', 'List tools, resources and prompts of a service with their schemas')]
 final class McpToolsCommand extends Command
 {
     use RegistryAccessTrait;

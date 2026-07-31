@@ -12,7 +12,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-#[AsCommand('mcp:make', 'Create MCP service or template')]
+#[AsCommand('mcp:make', 'Generate MCP service config or template code')]
 final class McpMakeCommand extends Command
 {
     public function configure(): void

@@ -27,7 +27,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-#[AsCommand('mcp:tools:call', 'Execute an MCP tool via JSON input')]
+#[AsCommand('mcp:tools:call', 'Execute a service tool with JSON parameters')]
 final class McpToolsCallCommand extends Command
 {
     use RegistryAccessTrait;

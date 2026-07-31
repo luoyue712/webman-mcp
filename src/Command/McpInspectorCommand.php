@@ -11,7 +11,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-#[AsCommand('mcp:inspector', 'Start MCP inspector')]
+#[AsCommand('mcp:inspector', 'Launch MCP Inspector to debug a service')]
 final class McpInspectorCommand extends Command
 {
     public function configure(): void
