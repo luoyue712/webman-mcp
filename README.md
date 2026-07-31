@@ -114,27 +114,26 @@ php webman mcp:list
 
 ### MCP开发工具
 
-|  类别  |          名称           | 描述                               |
-|:----:|:---------------------:|:---------------------------------|
-| tool |      system_info      | 获取webman框架信息，php版本信息，系统信息，是否使用协程 |
-| tool |      get_config       | 获取config配置信息                     |
-| tool |        get_env        | 获取env环境变量信息                      |
-| tool |     list_process      | 获取进程列表                           |
-| tool |      list_routes      | 获取路由列表                           |
-| tool |     match_routes      | 匹配url对应的路由信息                     |
-| tool |    list_dependence    | 获取项目依赖列表                         |
-| tool |    list_extensions    | 获取当前环境已加载的php扩展                  |
-| tool |  get_extension_funcs  | 获取扩展已加载的函数                       |
-| tool |      list_events      | 获取事件列表                           |
-| tool |       eval_code       | 执行php代码                          |
-| tool |      build_phar       | 将项目代码打包为phar文件                   |
-| tool |       build_bin       | 将项目代码打包为linux二进制可执行文件            |
-| tool | database_connections  | 获取数据库连接配置信息列表                    |
-| tool | database_execute_sql  | 执行原始sql脚本                        |
-| tool |   redis_connections   | 获取数据库redis配置信息列表                 |
-| tool |   redis_execute_raw   | 执行原始Redis命令                      |
-| tool |   redis_execute_lua   | 执行Redis Lua脚本                    |
-| tool | redis_execute_lua_sha | 使用sha1执行Redis Lua脚本              |
+|  类别  |          名称           | 描述                                     |
+|:----:|:---------------------:|:---------------------------------------:|
+| tool |      system_info      | 获取系统环境信息                              |
+| tool |     system_config     | 获取应用配置值                                |
+| tool |      system_env       | 获取环境变量                                 |
+| tool |    system_php_ini     | 获取PHP配置信息                              |
+| tool |  system_dependencies  | 获取项目Composer依赖列表                       |
+| tool |   system_extensions   | 获取已加载的PHP扩展及函数                        |
+| tool |     system_routes     | 获取路由列表                                 |
+| tool |  system_match_routes  | 匹配URL对应的路由                             |
+| tool |     system_events     | 获取事件列表                                 |
+| tool |   system_eval_code    | 执行PHP代码（有安全风险，请谨慎使用）                   |
+| tool |   system_build_phar   | 将项目打包为PHAR文件                           |
+| tool |   system_build_bin    | 将项目打包为Linux二进制文件                       |
+| tool | database_connections  | 获取数据库连接配置                              |
+| tool | database_execute_sql  | 执行原始SQL语句（支持参数绑定）                      |
+| tool |   redis_connections   | 获取Redis连接配置                            |
+| tool |   redis_execute_raw   | 执行原始Redis命令                            |
+| tool |   redis_execute_lua   | 执行Redis Lua脚本                          |
+| tool | redis_execute_lua_sha | 通过SHA1执行Redis Lua脚本                    |
 
 ## 日志记录
 

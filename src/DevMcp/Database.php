@@ -13,8 +13,8 @@ class Database
 {
     #[McpTool(
         name: 'database_connections',
-        title: '获取数据库连接配置信息',
-        description: '获取所有数据库连接的配置信息，包括驱动、数据库名、表前缀、连接池等',
+        title: '获取数据库连接配置',
+        description: '获取所有数据库连接的配置信息，包括驱动、数据库名、表前缀及连接池等',
         outputSchema: [
             'type' => 'object',
             'properties' => [
@@ -69,7 +69,7 @@ class Database
     #[McpTool(
         name: 'database_execute_sql',
         title: '执行原始SQL语句',
-        description: '在指定数据库连接上执行原始SQL语句，支持参数绑定防止SQL注入',
+        description: '在指定数据库连接上执行原始SQL语句，支持参数绑定以防止SQL注入',
         outputSchema: [
             'type' => 'object',
             'properties' => [

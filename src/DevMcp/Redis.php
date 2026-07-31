@@ -13,8 +13,8 @@ class Redis
 {
     #[McpTool(
         name: 'redis_connections',
-        title: '获取Redis连接配置信息',
-        description: '获取所有Redis连接的配置信息，包括数据库编号、连接池等',
+        title: '获取Redis连接配置',
+        description: '获取所有Redis连接的配置信息，包括数据库编号、前缀及连接池等',
         outputSchema: [
             'type' => 'object',
             'properties' => [
@@ -65,7 +65,7 @@ class Redis
     #[McpTool(
         name: 'redis_execute_raw',
         title: '执行原始Redis命令',
-        description: '在指定Redis连接上执行原始命令，支持切换数据库编号',
+        description: '在指定Redis连接上执行原始Redis命令，支持切换数据库编号，参数以数组形式传入',
         outputSchema: [
             'type' => 'object',
             'properties' => [
@@ -99,7 +99,7 @@ class Redis
     #[McpTool(
         name: 'redis_execute_lua',
         title: '执行Redis Lua脚本',
-        description: '在指定Redis连接上执行Lua脚本，支持键数量声明和参数传递',
+        description: '在指定Redis连接上执行Lua脚本，支持声明键数量并传递参数',
         outputSchema: [
             'type' => 'object',
             'properties' => [
@@ -134,7 +134,7 @@ class Redis
 
     #[McpTool(
         name: 'redis_execute_lua_sha',
-        title: '使用SHA1执行Redis Lua脚本',
+        title: '通过SHA1执行Redis Lua脚本',
         description: '使用SHA1摘要执行已缓存的Redis Lua脚本，避免重复传输脚本内容',
         outputSchema: [
             'type' => 'object',
