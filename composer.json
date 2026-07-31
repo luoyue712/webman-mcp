@@ -20,6 +20,14 @@
     "phpstan/phpstan": "^2.1",
     "phpunit/phpunit": "^10.5"
   },
+  "suggest": {
+    "webman/cache": "会话持久化存储",
+    "webman/redis": "Redis 开发工具",
+    "webman/event": "MCP 生命周期钩子与列表变更通知",
+    "monolog/monolog": "记录服务器日志",
+    "ext-swoole": "Swoole 协程，提升 SSE 传输性能",
+    "ext-swow": "Swow 协程，提升 SSE 传输性能"
+  },
   "autoload": {
     "psr-4": {
       "Luoyue\\WebmanMcp\\": "src"
