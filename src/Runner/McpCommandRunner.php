@@ -5,6 +5,7 @@ namespace Luoyue\WebmanMcp\Runner;
 use Luoyue\WebmanMcp\Command\McpInspectorCommand;
 use Luoyue\WebmanMcp\Command\McpListCommand;
 use Luoyue\WebmanMcp\Command\McpMakeCommand;
+use Luoyue\WebmanMcp\Command\McpResourcesReadCommand;
 use Luoyue\WebmanMcp\Command\McpStdioCommand;
 use Luoyue\WebmanMcp\Command\McpToolsCallCommand;
 use Luoyue\WebmanMcp\Command\McpToolsCommand;
@@ -19,6 +20,7 @@ final class McpCommandRunner implements McpRunnerInterface
         McpInspectorCommand::class,
         McpToolsCommand::class,
         McpToolsCallCommand::class,
+        McpResourcesReadCommand::class,
     ];
 
     /**

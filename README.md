@@ -106,6 +106,7 @@ php webman mcp:inspector mcp
 | mcp:inspector | service | 启动MCP Inspector调试工具 |
 | mcp:tools     | service | 列出服务的工具/资源/提示及Schema |
 | mcp:tools:call | service, tool-name, [json-input] | 通过JSON参数执行服务中的工具 |
+| mcp:resources:read | service, uri | 读取服务中的资源（支持资源模板URI） |
 
 示例：
 
@@ -119,6 +120,10 @@ php webman mcp:tools conformance
 ## 执行服务中的工具（默认pretty输出，--format=json输出JSON）
 php webman mcp:tools:call conformance test_simple_text
 php webman mcp:tools:call conformance test_sampling '{"prompt":"hello world"}' --format=json
+
+## 读取服务中的资源（支持静态资源与资源模板URI）
+php webman mcp:resources:read conformance test://static-text
+php webman mcp:resources:read conformance test://template/abc123/data --format=json
 ```
 
 ### MCP开发工具
