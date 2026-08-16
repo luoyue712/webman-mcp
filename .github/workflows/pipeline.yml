@@ -125,13 +125,28 @@ jobs:
         with:
           dependency-versions: ${{ matrix.dependencies }}
       - name: Tests
-        run: vendor/bin/phpunit --testsuite=unit --coverage-clover=coverage.xml
+        id: unit-tests
+        run: |
+          set -o pipefail
+          vendor/bin/phpunit --testsuite=unit --coverage-clover=coverage.xml 2>&1 | tee unit-tests.log
+        continue-on-error: true
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v7
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: false
+
+      - name: Upload unit tests log
+        if: steps.unit-tests.outcome == 'failure'
+        uses: actions/upload-artifact@v6
+        with:
+          name: unit-tests-log-${{ matrix.php }}-${{ matrix.dependencies }}
+          path: unit-tests.log
+
+      - name: Mark job failed
+        if: steps.unit-tests.outcome == 'failure'
+        run: exit 1
 
   inspector:
     runs-on: ubuntu-latest
@@ -154,7 +169,22 @@ jobs:
         uses: ramsey/composer-install@v4
 
       - name: Inspector tests
-        run: vendor/bin/phpunit --testsuite=inspector
+        id: inspector-tests
+        run: |
+          set -o pipefail
+          vendor/bin/phpunit --testsuite=inspector 2>&1 | tee inspector-tests.log
+        continue-on-error: true
+
+      - name: Upload inspector tests log
+        if: steps.inspector-tests.outcome == 'failure'
+        uses: actions/upload-artifact@v6
+        with:
+          name: inspector-tests-log
+          path: inspector-tests.log
+
+      - name: Mark job failed
+        if: steps.inspector-tests.outcome == 'failure'
+        run: exit 1
 
   qa:
     runs-on: ubuntu-latest
