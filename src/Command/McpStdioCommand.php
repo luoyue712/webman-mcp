@@ -11,7 +11,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-#[AsCommand('mcp:server', 'Starts an MCP server')]
+#[AsCommand('mcp:server', 'Start an MCP server via STDIO transport')]
 final class McpStdioCommand extends Command
 {
     public function configure(): void

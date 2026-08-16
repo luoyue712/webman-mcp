@@ -12,7 +12,7 @@ use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-#[AsCommand('mcp:list', 'List all MCP service')]
+#[AsCommand('mcp:list', 'List all MCP services with transport, session and logger info')]
 final class McpListCommand extends Command
 {
     public function execute(InputInterface $input, OutputInterface $output): int

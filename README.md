@@ -104,13 +104,30 @@ php webman mcp:inspector mcp
 | mcp:list      |         |       MCP服务列表       |
 | mcp:make      |  type   |    生成MCP配置或模板代码     |
 | mcp:inspector | service | 启动MCP Inspector调试工具 |
+| mcp:tools     | service | 列出服务的工具/资源/提示及Schema |
+| mcp:tools:call | service, tool-name, [json-input] | 通过JSON参数执行服务中的工具 |
+| mcp:resources:read | service, uri | 读取服务中的资源（支持资源模板URI） |
 
 示例：
 
 ```shell
 ## 查看定义的mcp服务列表以及配置信息
 php webman mcp:list
+
+## 列出服务的工具/资源/提示及Schema
+php webman mcp:tools conformance
+
+## 执行服务中的工具（默认pretty输出，--format=json输出JSON）
+php webman mcp:tools:call conformance test_simple_text
+php webman mcp:tools:call conformance test_simple_text --format=json
+
+## 读取服务中的资源（支持静态资源与资源模板URI）
+php webman mcp:resources:read conformance test://static-text
+php webman mcp:resources:read conformance test://template/abc123/data --format=json
 ```
+
+> 注意：需要与客户端交互的工具（如 sampling、elicitation）无法通过 `mcp:tools:call` 执行，
+> 这类工具依赖真实 MCP 客户端会话，请在 HTTP/STDIO 传输下运行。
 
 ### MCP开发工具
 
