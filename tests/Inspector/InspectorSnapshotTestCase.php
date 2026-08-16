@@ -9,7 +9,7 @@ use Symfony\Component\Process\Process;
 
 abstract class InspectorSnapshotTestCase extends TestCase
 {
-    private const INSPECTOR_VERSION = '2.2.0';
+    private const INSPECTOR_VERSION = '0.22.0';
 
     /** @param array<string, mixed> $options */
     #[DataProvider('provideMethods')]

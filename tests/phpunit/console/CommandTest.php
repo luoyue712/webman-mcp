@@ -23,7 +23,7 @@ class CommandTest extends TestCase
         $table = new Table($buf);
         $table->setHeaders(['service', 'stdio', 'process_port', 'route', 'endpoint', 'session', 'logger']);
         $table->setHeaderTitle('mcp service list');
-        array_map(static fn($row) => $table->addRow(array_values($row)), $rows);
+        array_map(static fn ($row) => $table->addRow(array_values($row)), $rows);
         $table->render();
 
         $this->assertSame($buf->fetch(), $data);
@@ -45,6 +45,15 @@ class CommandTest extends TestCase
                     'route' => 'yes',
                     'endpoint' => '/mcp',
                     'session' => '{"store":"","ttl":86400,"prefix":"mcp-"}',
+                    'logger' => '(null)',
+                ],
+                [
+                    'service' => 'inspector',
+                    'stdio' => 'yes',
+                    'process_port' => '(null)',
+                    'route' => 'no',
+                    'endpoint' => '/mcp',
+                    'session' => '[]',
                     'logger' => '(null)',
                 ],
             ],

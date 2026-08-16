@@ -94,6 +94,8 @@ final class InspectorElements
 
     /**
      * @param mixed $value the new value (int for precision, bool for allow_negative)
+     *
+     * @return array{success: bool, error?: string, message?: string}
      */
     #[McpTool(name: 'update_setting', description: 'Updates a specific configuration setting')]
     public function updateSetting(string $setting, mixed $value): array
