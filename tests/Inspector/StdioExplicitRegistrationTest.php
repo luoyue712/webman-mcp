@@ -12,7 +12,7 @@ final class StdioExplicitRegistrationTest extends StdioInspectorSnapshotTestCase
                 'method' => 'tools/call',
                 'options' => [
                     'toolName' => 'echo_text',
-                    'toolArgs' => ['text' => 'Hello World!'],
+                    'toolArgs' => ['text' => 'Hello World'],
                 ],
                 'testName' => 'echo_text',
             ],

@@ -2,10 +2,9 @@
 
 use Composer\InstalledVersions;
 use Luoyue\WebmanMcp\Event\WebmanEvent;
-use Luoyue\WebmanMcp\Server\WebmanDiscoverer;
+use Luoyue\WebmanMcp\Server\DevelopmentMcpLoader;
 use Luoyue\WebmanMcp\Server\WebmanSessionStore;
 use Luoyue\WebmanMcp\Tests\Conformance\Elements;
-use Mcp\Capability\Registry\Loader\DiscoveryLoader;
 use Mcp\Schema\Content\AudioContent;
 use Mcp\Schema\Content\EmbeddedResource;
 use Mcp\Schema\Content\ImageContent;
@@ -124,13 +123,8 @@ return [
             $server->setServerInfo('inspector-test-server', '1.0.0');
             $server->setProtocolVersion(ProtocolVersion::V2025_06_18);
             $server->enableExtension(new McpApps());
-            // 注解扫描：注册 tests/Fixtures/Inspector 下的工具/资源/提示
-            $server->addLoader(new DiscoveryLoader(
-                base_path(),
-                ['Fixtures/Inspector'],
-                [],
-                new WebmanDiscoverer()
-            ));
+            // 注解扫描：注册 tests/Fixtures/Inspector 下的工具/资源/提示（复用 DevMcp 加载器，兼容 webman < 2.2）
+            $server->addLoader(new DevelopmentMcpLoader(['Fixtures/Inspector']));
             // mcp-apps（UI meta 为运行时对象，无法注解化，显式注册）
             $server
                 ->addResource(
