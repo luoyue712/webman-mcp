@@ -5,7 +5,7 @@
   "description": "Webman plugin luoyue/webman-mcp",
   "require": {
     "php": ">=8.1",
-    "mcp/sdk": "^0.6",
+    "mcp/sdk": "^0.7",
     "nyholm/psr7": "^1.8",
     "webman/console": "^2.1.12"
   },
@@ -49,23 +49,6 @@
   "config": {
     "allow-plugins": {
       "php-http/discovery": false
-    },
-    "policy": {
-      "advisories": {
-        "ignore": [
-          "mcp/sdk"
-        ],
-        "ignore-id": [
-          "GHSA-7m52-jw36-44r3",
-          "PKSA-p9gd-j6gr-6f9t"
-        ]
-      }
-    },
-    "audit": {
-      "ignore": [
-        "GHSA-7m52-jw36-44r3",
-        "PKSA-p9gd-j6gr-6f9t"
-      ]
     }
   }
 }
