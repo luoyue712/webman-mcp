@@ -11,7 +11,6 @@
 - 一键启动，安装后即可启动，同时支持配置复杂的功能。
 - 一个项目支持多个MCP服务器，并按服务器名称隔离配置。
 - 与Webman框架深度集成，HTTP支持路由模式和自定义进程模式。
-- 自动注册MCP服务到主流IDE（VSCode、Cursor、通义灵码等）。
 - 支持 STDIO、Streamable HTTP 高性能传输。
 - 支持协程与非协程，从而提高了在sse场景下高性能传输。
 - 内置18个MCP开发工具，提升开发效率。
@@ -67,27 +66,7 @@ php webman mcp:make template
 
 实际上并不太需要此命令创建代码，因为使用方法已足够简单，只需在方法中声明注解即可。
 
-### 2. 配置客户端连接配置
-
-打开app.php，修改`auto_register_client`配置为您常用的客户端。
-
-```php
-<?php
-
-use Luoyue\WebmanMcp\Enum\McpClientRegisterEnum;
-
-return [
-    'enable' => true,
-    // 自动注册MCP服务到ide中
-    'auto_register_client' => McpClientRegisterEnum::CURSOR_IDE,
-    // 事件分发模式: dispatch或emit
-    'event_mode' => 'dispatch',
-];
-```
-
-什么？没有您的客户端？我们非常欢迎您提交相关PR。
-
-### 3. 测试您的服务器
+### 2. 测试您的服务器
 
 ```bash
 # 使用 MCP Inspector 测试（需要Node.js，使用npx或bunx）

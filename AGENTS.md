@@ -8,7 +8,7 @@
 
 - `src/` — 插件源码，PSR-4 `Luoyue\WebmanMcp\`
 - `src/config/plugin/luoyue/webman-mcp/` — 默认配置，由 `src/Install.php` 复制到应用目录 `config/plugin/luoyue/webman-mcp/`
-- `src/Runner/` — 接线层：`McpRouterRunner`（路由）、`McpProcessRunner`（workerman 进程）、`McpAutoLoadRunner`（bootstrap，仅 Windows）、`McpCommandRunner`（控制台命令）
+- `src/Runner/` — 接线层：`McpRouterRunner`（路由）、`McpProcessRunner`（workerman 进程）、`McpCommandRunner`（控制台命令）
 - `src/Command/` — 控制台命令：mcp:server / mcp:list / mcp:make / mcp:inspector
 - `src/DevMcp/` — 内置开发工具（System/Redis/Database）；**PHPStan 排除**
 - `tests/` — PSR-4 `Luoyue\WebmanMcp\Tests\`；`tests/Bootstrap.php` 从 `tests/config/` 加载 webman `Config`（配置前缀 `plugin.luoyue.webman-mcp`）
