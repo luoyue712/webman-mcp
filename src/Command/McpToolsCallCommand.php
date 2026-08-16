@@ -51,21 +51,18 @@ final class McpToolsCallCommand extends Command
         $format = (string) $input->getOption('format');
 
         if (!in_array($format, ['pretty', 'json'], true)) {
-            $io->error(sprintf('Unsupported format: %s', $format));
-
-            return Command::FAILURE;
+            return $this->failure($io, $output, $format, sprintf('Unsupported format: %s', $format));
         }
 
         $params = json_decode($jsonInput, true);
         if (JSON_ERROR_NONE !== json_last_error()) {
-            $io->error(sprintf('Invalid JSON: %s', json_last_error_msg()));
-
-            return Command::FAILURE;
+            return $this->failure($io, $output, $format, sprintf('Invalid JSON: %s', json_last_error_msg()));
         }
         if (!is_array($params)) {
-            $io->error('JSON input must be an object');
-
-            return Command::FAILURE;
+            return $this->failure($io, $output, $format, 'JSON input must be an object');
+        }
+        if ([] !== $params && array_is_list($params)) {
+            return $this->failure($io, $output, $format, 'JSON input must be an object, not a JSON array');
         }
 
         /** @var McpServerManager $mcpServerManager */
@@ -73,18 +70,19 @@ final class McpToolsCallCommand extends Command
         try {
             $registry = $this->getRegistry($mcpServerManager, $service);
         } catch (InvalidArgumentException $e) {
-            $io->error($e->getMessage());
-
-            return Command::FAILURE;
+            return $this->failure($io, $output, $format, $e->getMessage());
         }
 
         try {
             $reference = $registry->getTool($toolName);
         } catch (ToolNotFoundException $e) {
-            $io->error(sprintf('Tool "%s" not found', $toolName));
-            $io->note(sprintf('Use "webman mcp:tools %s" to see all available tools', $service));
-
-            return Command::FAILURE;
+            return $this->failure(
+                $io,
+                $output,
+                $format,
+                sprintf('Tool "%s" not found', $toolName),
+                sprintf('Use "webman mcp:tools %s" to see all available tools', $service)
+            );
         }
 
         $validationErrors = (new SchemaValidator())->validateAgainstJsonSchema($params, $reference->tool->inputSchema);
@@ -93,9 +91,13 @@ final class McpToolsCallCommand extends Command
                 static fn (array $error) => $error['message'],
                 array_slice($validationErrors, 0, 3)
             );
-            $io->error(sprintf('Invalid parameters for tool "%s": %s', $toolName, implode('; ', $messages)));
 
-            return Command::FAILURE;
+            return $this->failure(
+                $io,
+                $output,
+                $format,
+                sprintf('Invalid parameters for tool "%s": %s', $toolName, implode('; ', $messages))
+            );
         }
 
         $session = new Session(new InMemorySessionStore());
@@ -118,9 +120,7 @@ final class McpToolsCallCommand extends Command
             \assert($container instanceof ContainerInterface);
             $result = (new ReferenceHandler($container))->handle($reference, $arguments);
         } catch (\Throwable $e) {
-            $io->error(sprintf('Error: %s', $e->getMessage()));
-
-            return Command::FAILURE;
+            return $this->failure($io, $output, $format, sprintf('Error: %s', $e->getMessage()));
         }
 
         if ('json' === $format) {
@@ -131,6 +131,31 @@ final class McpToolsCallCommand extends Command
         }
 
         return Command::SUCCESS;
+    }
+
+    private function failure(
+        SymfonyStyle $io,
+        OutputInterface $output,
+        string $format,
+        string $message,
+        ?string $note = null,
+    ): int {
+        if ('json' === $format) {
+            $payload = ['error' => $message];
+            if (null !== $note) {
+                $payload['note'] = $note;
+            }
+            $output->writeln(json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+
+            return Command::FAILURE;
+        }
+
+        $io->error($message);
+        if (null !== $note) {
+            $io->note($note);
+        }
+
+        return Command::FAILURE;
     }
 
     private function renderPretty(mixed $result, SymfonyStyle $io): void

@@ -71,4 +71,27 @@ class ToolsCallCommandTest extends TestCase
 
         self::assertStringContainsString('Mcp server [not_exist] not found.', $data);
     }
+
+    public function testJsonErrorOutputIsJson(): void
+    {
+        $data = McpHelper::fetch_console(McpToolsCallCommand::class, [
+            'service' => 'conformance',
+            'tool-name' => 'not_exist',
+            '--format' => 'json',
+        ]);
+
+        self::assertStringContainsString('"error"', $data);
+        self::assertStringContainsString('Tool \\"not_exist\\" not found', $data);
+    }
+
+    public function testJsonArrayInputRejected(): void
+    {
+        $data = McpHelper::fetch_console(McpToolsCallCommand::class, [
+            'service' => 'conformance',
+            'tool-name' => 'test_simple_text',
+            'json-input' => '[1,2,3]',
+        ]);
+
+        self::assertStringContainsString('JSON input must be an object, not a JSON array', $data);
+    }
 }

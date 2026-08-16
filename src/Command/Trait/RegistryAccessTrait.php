@@ -2,13 +2,13 @@
 
 namespace Luoyue\WebmanMcp\Command\Trait;
 
+use InvalidArgumentException;
 use Luoyue\WebmanMcp\McpServerManager;
 use Mcp\Capability\RegistryInterface;
 use Mcp\Server;
 use Mcp\Server\Handler\Request\ListToolsHandler;
 use ReflectionMethod;
 use ReflectionProperty;
-use RuntimeException;
 
 /**
  * @internal
@@ -31,6 +31,11 @@ trait RegistryAccessTrait
                 }
             }
         }
-        throw new RuntimeException("Unable to access MCP registry for service: {$serviceName}");
+        throw new InvalidArgumentException(
+            sprintf(
+                'The "tools" capability of service "%s" is disabled or its registry is not accessible, so the command cannot run. Enable tools (e.g. setCapabilities with tools: true) in the service configuration.',
+                $serviceName
+            )
+        );
     }
 }
