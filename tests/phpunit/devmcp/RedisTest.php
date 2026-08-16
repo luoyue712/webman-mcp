@@ -3,13 +3,23 @@
 namespace Luoyue\WebmanMcp\Tests\phpunit\devmcp;
 
 use Luoyue\WebmanMcp\DevMcp\Redis;
+use PHPUnit\Framework\Attributes\RequiresPhpExtension;
 use PHPUnit\Framework\TestCase;
 
 class RedisTest extends TestCase
 {
     private const TEST_CONNECTION = 'plugin.luoyue.webman-mcp.default';
 
-    private function connectionAvailable(): bool
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        if ('testDatabaseConnections' !== $this->name() && !$this->connectionAvailable()) {
+            self::markTestSkipped('Redis 连接不可用，跳过');
+        }
+    }
+
+    protected function connectionAvailable(): bool
     {
         try {
             $result = (new Redis())->executeRaw(['ping'], self::TEST_CONNECTION);
@@ -42,12 +52,9 @@ class RedisTest extends TestCase
         self::assertArrayHasKey('max_connections', $first['pool']);
     }
 
+    #[RequiresPhpExtension('redis')]
     public function testExecuteRaw(): void
     {
-        if (!$this->connectionAvailable()) {
-            self::markTestSkipped('Redis 连接不可用，跳过');
-        }
-
         $redis = new Redis();
         $key = 'mcp_test_' . str_replace('.', '', uniqid('', true));
 
@@ -64,12 +71,9 @@ class RedisTest extends TestCase
         }
     }
 
+    #[RequiresPhpExtension('redis')]
     public function testExecuteLua(): void
     {
-        if (!$this->connectionAvailable()) {
-            self::markTestSkipped('Redis 连接不可用，跳过');
-        }
-
         $redis = new Redis();
         $key = 'mcp_test_' . str_replace('.', '', uniqid('', true));
 
@@ -87,12 +91,9 @@ class RedisTest extends TestCase
         }
     }
 
+    #[RequiresPhpExtension('redis')]
     public function testExecuteLuaSha(): void
     {
-        if (!$this->connectionAvailable()) {
-            self::markTestSkipped('Redis 连接不可用，跳过');
-        }
-
         $redis = new Redis();
         $key = 'mcp_test_' . str_replace('.', '', uniqid('', true));
         $script = 'return redis.call("GET", KEYS[1])';

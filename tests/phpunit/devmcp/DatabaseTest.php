@@ -3,12 +3,22 @@
 namespace Luoyue\WebmanMcp\Tests\phpunit\devmcp;
 
 use Luoyue\WebmanMcp\DevMcp\Database;
+use PHPUnit\Framework\Attributes\RequiresPhpExtension;
 use PHPUnit\Framework\TestCase;
 use support\Db;
 
 class DatabaseTest extends TestCase
 {
-    private function connectionAvailable(): bool
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        if ('testDatabaseConnections' !== $this->name() && !$this->connectionAvailable()) {
+            self::markTestSkipped('MySQL 连接不可用，跳过');
+        }
+    }
+
+    protected function connectionAvailable(): bool
     {
         try {
             Db::connection()->getPdo();
@@ -36,12 +46,9 @@ class DatabaseTest extends TestCase
         self::assertArrayHasKey('max_connections', $first['pool']);
     }
 
+    #[RequiresPhpExtension('pdo_mysql')]
     public function testDatabaseExecuteSql(): void
     {
-        if (!$this->connectionAvailable()) {
-            self::markTestSkipped('MySQL 连接不可用，跳过');
-        }
-
         $db = new Database();
         $table = 'mcp_test_' . str_replace('.', '_', uniqid('', true));
 
@@ -58,12 +65,9 @@ class DatabaseTest extends TestCase
         }
     }
 
+    #[RequiresPhpExtension('pdo_mysql')]
     public function testDatabaseExecuteSqlSelectEmpty(): void
     {
-        if (!$this->connectionAvailable()) {
-            self::markTestSkipped('MySQL 连接不可用，跳过');
-        }
-
         $db = new Database();
         $table = 'mcp_test_' . str_replace('.', '_', uniqid('', true));
 
@@ -76,12 +80,9 @@ class DatabaseTest extends TestCase
         }
     }
 
+    #[RequiresPhpExtension('pdo_mysql')]
     public function testDatabaseExecuteSqlThrowsToolCallException(): void
     {
-        if (!$this->connectionAvailable()) {
-            self::markTestSkipped('MySQL 连接不可用，跳过');
-        }
-
         $db = new Database();
 
         $this->expectException(\Mcp\Exception\ToolCallException::class);
