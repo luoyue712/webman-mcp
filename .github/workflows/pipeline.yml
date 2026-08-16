@@ -144,6 +144,20 @@ jobs:
           name: unit-tests-log-${{ matrix.php }}-${{ matrix.dependencies }}
           path: unit-tests.log
 
+      - name: Report unit failure
+        if: steps.unit-tests.outcome == 'failure'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const out = fs.readFileSync('unit-tests.log', 'utf8').slice(-12000);
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: '**unit (${{ matrix.php }}, ${{ matrix.dependencies }}) 失败日志**\n```\n' + out + '\n```'
+            });
+
       - name: Mark job failed
         if: steps.unit-tests.outcome == 'failure'
         run: exit 1
@@ -181,6 +195,20 @@ jobs:
         with:
           name: inspector-tests-log
           path: inspector-tests.log
+
+      - name: Report inspector failure
+        if: steps.inspector-tests.outcome == 'failure'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const out = fs.readFileSync('inspector-tests.log', 'utf8').slice(-12000);
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: '**inspector CI 失败日志**\n```\n' + out + '\n```'
+            });
 
       - name: Mark job failed
         if: steps.inspector-tests.outcome == 'failure'
