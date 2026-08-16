@@ -4,7 +4,6 @@ namespace Luoyue\WebmanMcp\Tests\phpunit\devmcp;
 
 use Luoyue\WebmanMcp\DevMcp\Redis;
 use PHPUnit\Framework\TestCase;
-use support\Redis as RedisInstance;
 
 class RedisTest extends TestCase
 {
@@ -13,11 +12,16 @@ class RedisTest extends TestCase
     private function connectionAvailable(): bool
     {
         try {
-            RedisInstance::connection(self::TEST_CONNECTION)->ping();
-            return true;
+            $result = (new Redis())->executeRaw(['ping'], self::TEST_CONNECTION);
+            return $result['success'];
         } catch (\Throwable $e) {
             return false;
         }
+    }
+
+    private function deleteKeys(string ...$keys): void
+    {
+        (new Redis())->executeRaw(['del', ...$keys], self::TEST_CONNECTION);
     }
 
     public function testDatabaseConnections(): void
@@ -56,7 +60,7 @@ class RedisTest extends TestCase
             self::assertTrue($get['success']);
             self::assertSame('value-01', $get['result']);
         } finally {
-            RedisInstance::connection(self::TEST_CONNECTION)->del([$key]);
+            $this->deleteKeys($key);
         }
     }
 
@@ -79,7 +83,7 @@ class RedisTest extends TestCase
             );
             self::assertSame([$key, 'a1', 'b2'], $result['result']);
         } finally {
-            RedisInstance::connection(self::TEST_CONNECTION)->del([$key]);
+            $this->deleteKeys($key);
         }
     }
 
@@ -94,7 +98,7 @@ class RedisTest extends TestCase
         $script = 'return redis.call("GET", KEYS[1])';
 
         try {
-            RedisInstance::connection(self::TEST_CONNECTION)->set($key, 'value-02');
+            $redis->executeRaw(['set', $key, 'value-02'], self::TEST_CONNECTION);
             $result = $redis->executeLuaSha(
                 $script,
                 self::TEST_CONNECTION,
@@ -105,7 +109,7 @@ class RedisTest extends TestCase
             self::assertTrue($result['success']);
             self::assertSame('value-02', $result['result']);
         } finally {
-            RedisInstance::connection(self::TEST_CONNECTION)->del([$key]);
+            $this->deleteKeys($key);
         }
     }
 }
