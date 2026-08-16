@@ -5,6 +5,7 @@ parameters:
         - tests/
     excludePaths:
         - src/DevMcp/
+        - tests/Inspector/
     treatPhpDocTypesAsCertain: false
     ignoreErrors:
         -

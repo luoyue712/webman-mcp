@@ -1,0 +1,19 @@
+{
+  "resources": [
+    {
+      "name": "static-text",
+      "title": "A static text resource for testing",
+      "uri": "test://static-text"
+    },
+    {
+      "name": "static-binary",
+      "title": "A static binary resource (image) for testing",
+      "uri": "test://static-binary"
+    },
+    {
+      "name": "watched-resource",
+      "title": "A resource that can be watched",
+      "uri": "test://watched-resource"
+    }
+  ]
+}

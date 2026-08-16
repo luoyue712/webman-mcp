@@ -133,6 +133,29 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: false
 
+  inspector:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          coverage: 'none'
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Composer
+        uses: ramsey/composer-install@v4
+
+      - name: Inspector tests
+        run: vendor/bin/phpunit --testsuite=inspector
+
   qa:
     runs-on: ubuntu-latest
     steps:

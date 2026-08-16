@@ -1,0 +1,14 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n    \"mode\": \"debug\",\n    \"processed_input\": \"DEBUG TEST\",\n    \"message\": \"Processed in DEBUG mode.\"\n}"
+    }
+  ],
+  "structuredContent": {
+    "mode": "debug",
+    "processed_input": "DEBUG TEST",
+    "message": "Processed in DEBUG mode."
+  },
+  "isError": false
+}

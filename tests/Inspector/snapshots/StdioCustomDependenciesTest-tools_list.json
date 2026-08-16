@@ -1,0 +1,250 @@
+{
+  "tools": [
+    {
+      "name": "add_numbers",
+      "description": "Adds two numbers",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "a": {
+            "type": "integer"
+          },
+          "b": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "a",
+          "b"
+        ]
+      }
+    },
+    {
+      "name": "multiply_numbers",
+      "description": "Multiplies two numbers",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "a": {
+            "type": "integer"
+          },
+          "b": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "a",
+          "b"
+        ]
+      }
+    },
+    {
+      "name": "divide_numbers",
+      "description": "Divides two numbers",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "a": {
+            "type": "integer"
+          },
+          "b": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "a",
+          "b"
+        ]
+      }
+    },
+    {
+      "name": "power",
+      "description": "Raises a base number to an exponent power",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "base": {
+            "type": "integer"
+          },
+          "exponent": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "base",
+          "exponent"
+        ]
+      }
+    },
+    {
+      "name": "calculate",
+      "description": "Performs a calculation based on the operation",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "a": {
+            "type": "number"
+          },
+          "b": {
+            "type": "number"
+          },
+          "operation": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "a",
+          "b",
+          "operation"
+        ]
+      }
+    },
+    {
+      "name": "update_setting",
+      "description": "Updates a specific configuration setting",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "setting": {
+            "type": "string"
+          },
+          "value": {
+            "description": "the new value (int for precision, bool for allow_negative)"
+          }
+        },
+        "required": [
+          "setting",
+          "value"
+        ]
+      }
+    },
+    {
+      "name": "add_task",
+      "description": "Adds a new task for a given user",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "userId",
+          "description"
+        ]
+      }
+    },
+    {
+      "name": "list_user_tasks",
+      "description": "Lists pending tasks for a specific user",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "userId"
+        ]
+      }
+    },
+    {
+      "name": "complete_task",
+      "description": "Marks a task as complete",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "taskId": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "taskId"
+        ]
+      }
+    },
+    {
+      "name": "process_data_by_mode",
+      "description": "Processes input data with behavior depending on the APP_MODE environment variable",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "input": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "mode": {
+            "type": "string",
+            "description": "The processing mode used"
+          },
+          "processed_input": {
+            "type": "string",
+            "description": "The processed input data"
+          },
+          "original_input": {
+            "type": "string",
+            "description": "The original input data (only in default mode)"
+          },
+          "message": {
+            "type": "string",
+            "description": "A descriptive message about the processing"
+          }
+        },
+        "required": [
+          "mode",
+          "message"
+        ]
+      }
+    },
+    {
+      "name": "echo_text",
+      "description": "Echoes the input text back",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "text"
+        ]
+      }
+    },
+    {
+      "name": "get_weather",
+      "description": "Get current weather for a city",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "city": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "city"
+        ]
+      },
+      "_meta": {
+        "ui": {
+          "resourceUri": "ui://weather-app",
+          "visibility": [
+            "model",
+            "app"
+          ]
+        }
+      }
+    }
+  ]
+}

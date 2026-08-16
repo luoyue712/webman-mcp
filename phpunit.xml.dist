@@ -10,6 +10,9 @@
             <directory>tests/phpunit/console</directory>
             <directory>tests/phpunit/runner</directory>
         </testsuite>
+        <testsuite name="inspector">
+            <directory>tests/Inspector</directory>
+        </testsuite>
     </testsuites>
 
     <source>

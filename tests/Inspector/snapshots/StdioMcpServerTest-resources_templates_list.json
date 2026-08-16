@@ -1,0 +1,10 @@
+{
+  "resourceTemplates": [
+    {
+      "name": "template",
+      "title": "A resource template with parameter substitution",
+      "uriTemplate": "test://template/{id}/data",
+      "description": "application/json"
+    }
+  ]
+}

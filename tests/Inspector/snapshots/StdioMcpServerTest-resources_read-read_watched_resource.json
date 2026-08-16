@@ -1,0 +1,9 @@
+{
+  "contents": [
+    {
+      "uri": "test://watched-resource",
+      "mimeType": "text/plain",
+      "text": "Watched resource content"
+    }
+  ]
+}

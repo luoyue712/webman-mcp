@@ -1,0 +1,9 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "This is a simple text response for testing."
+    }
+  ],
+  "isError": false
+}
