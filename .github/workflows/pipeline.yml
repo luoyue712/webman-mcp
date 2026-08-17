@@ -111,13 +111,20 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           extensions: pdo_mysql, redis
+          coverage: pcov
 
       - name: Install Composer
         uses: ramsey/composer-install@v4
         with:
           dependency-versions: ${{ matrix.dependencies }}
       - name: Tests
-        run: vendor/bin/phpunit --testsuite=unit
+        run: vendor/bin/phpunit --testsuite=unit --coverage-clover=coverage.xml
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: false
 
   qa:
     runs-on: ubuntu-latest
