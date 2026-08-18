@@ -19,7 +19,7 @@ jobs:
             extension: 'swoole'
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -104,7 +104,7 @@ jobs:
       MCP_TEST_REDIS_DATABASE: 0
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -118,19 +118,13 @@ jobs:
         with:
           dependency-versions: ${{ matrix.dependencies }}
       - name: Tests
-        run: vendor/bin/phpunit --testsuite=unit --coverage-clover=coverage.xml
-
-      - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          fail_ci_if_error: false
+        run: vendor/bin/phpunit --testsuite=unit,console
 
   qa:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
