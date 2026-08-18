@@ -39,13 +39,6 @@ jobs:
         if: ${{ matrix.extension == 'swow' && (runner.os == 'Windows' || runner.os == 'macOS') }}
         run: sudo pie install swow/swow-extension --skip-enable-extension
 
-      - name: Cache Composer dependencies
-        uses: actions/cache@v6
-        with:
-          path: ~/.composer/cache
-          key: php-${{ matrix.php }}-composer-locked-${{ hashFiles('composer.lock') }}
-          restore-keys: php-${{ matrix.php }}-composer-locked-
-
       - name: Install Composer
         uses: ramsey/composer-install@v4
 
@@ -113,6 +106,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -126,9 +124,7 @@ jobs:
           dependency-versions: ${{ matrix.dependencies }}
       - name: Tests
         id: unit-tests
-        run: |
-          set -o pipefail
-          vendor/bin/phpunit --testsuite=unit --coverage-clover=coverage.xml 2>&1 | tee unit-tests.log
+        run: vendor/bin/phpunit --testsuite=unit,inspector --coverage-clover=coverage.xml
         continue-on-error: true
 
       - name: Upload coverage reports to Codecov
@@ -136,83 +132,6 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: false
-
-      - name: Upload unit tests log
-        if: steps.unit-tests.outcome == 'failure'
-        uses: actions/upload-artifact@v6
-        with:
-          name: unit-tests-log-${{ matrix.php }}-${{ matrix.dependencies }}
-          path: unit-tests.log
-
-      - name: Report unit failure
-        if: steps.unit-tests.outcome == 'failure'
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const fs = require('fs');
-            const out = fs.readFileSync('unit-tests.log', 'utf8').slice(-12000);
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-              body: '**unit (${{ matrix.php }}, ${{ matrix.dependencies }}) 失败日志**\n```\n' + out + '\n```'
-            });
-
-      - name: Mark job failed
-        if: steps.unit-tests.outcome == 'failure'
-        run: exit 1
-
-  inspector:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.1'
-          coverage: 'none'
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-
-      - name: Install Composer
-        uses: ramsey/composer-install@v4
-
-      - name: Inspector tests
-        id: inspector-tests
-        run: |
-          set -o pipefail
-          vendor/bin/phpunit --testsuite=inspector 2>&1 | tee inspector-tests.log
-        continue-on-error: true
-
-      - name: Upload inspector tests log
-        if: steps.inspector-tests.outcome == 'failure'
-        uses: actions/upload-artifact@v6
-        with:
-          name: inspector-tests-log
-          path: inspector-tests.log
-
-      - name: Report inspector failure
-        if: steps.inspector-tests.outcome == 'failure'
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const fs = require('fs');
-            const out = fs.readFileSync('inspector-tests.log', 'utf8').slice(-12000);
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-              body: '**inspector CI 失败日志**\n```\n' + out + '\n```'
-            });
-
-      - name: Mark job failed
-        if: steps.inspector-tests.outcome == 'failure'
-        run: exit 1
 
   qa:
     runs-on: ubuntu-latest
