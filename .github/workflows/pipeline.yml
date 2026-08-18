@@ -4,7 +4,10 @@ on:
     paths:
       - 'src/**'
       - 'tests/**'
+      - '**/*.php'
       - 'composer.json'
+      - 'phpstan.dist.neon'
+      - 'phpunit.xml.dist'
 
 permissions:
   contents: read

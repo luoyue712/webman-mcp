@@ -3,6 +3,13 @@ name: coverage
 on:
   push:
     branches: [ master ]
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      - '**/*.php'
+      - 'composer.json'
+      - 'phpstan.dist.neon'
+      - 'phpunit.xml.dist'
 
 permissions:
   contents: read
