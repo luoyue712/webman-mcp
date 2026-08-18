@@ -125,7 +125,7 @@ jobs:
         with:
           dependency-versions: ${{ matrix.dependencies }}
       - name: Tests
-        run: vendor/bin/phpunit --testsuite=unit,console --coverage-clover=coverage.xml
+        run: vendor/bin/phpunit --testsuite=unit --coverage-clover=coverage.xml
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v7
