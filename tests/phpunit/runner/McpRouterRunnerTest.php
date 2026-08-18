@@ -21,7 +21,6 @@ class McpRouterRunnerTest extends TestCase
         $container = Container::instance();
         $refContainer = new \ReflectionClass($container);
         $instancesProp = $refContainer->getProperty('instances');
-        $instancesProp->setAccessible(true);
         $instances = $instancesProp->getValue($container);
 
         $this->originalManager = $instances[McpServerManager::class] ?? null;
@@ -32,7 +31,6 @@ class McpRouterRunnerTest extends TestCase
         $container = Container::instance();
         $refContainer = new \ReflectionClass($container);
         $instancesProp = $refContainer->getProperty('instances');
-        $instancesProp->setAccessible(true);
         $instances = $instancesProp->getValue($container);
 
         if ($this->originalManager !== null) {
@@ -78,7 +76,6 @@ class McpRouterRunnerTest extends TestCase
         $container = Container::instance();
         $refContainer = new \ReflectionClass($container);
         $instancesProp = $refContainer->getProperty('instances');
-        $instancesProp->setAccessible(true);
         $instances = $instancesProp->getValue($container);
         $instances[McpServerManager::class] = $fakeManager;
         $instancesProp->setValue($container, $instances);

@@ -24,14 +24,12 @@ class McpProcessRunnerTest extends TestCase
         $container = Container::instance();
         $refContainer = new \ReflectionClass($container);
         $instancesProp = $refContainer->getProperty('instances');
-        $instancesProp->setAccessible(true);
         $instances = $instancesProp->getValue($container);
         $this->originalManager = $instances[McpServerManager::class] ?? null;
 
         // 备份 McpServerManager::$config
         $refManager = new \ReflectionClass(McpServerManager::class);
         $configProp = $refManager->getProperty('config');
-        $configProp->setAccessible(true);
         if ($configProp->isInitialized()) {
             $this->originalConfig = $configProp->getValue(null) ?? [];
         }
@@ -45,7 +43,6 @@ class McpProcessRunnerTest extends TestCase
         $container = Container::instance();
         $refContainer = new \ReflectionClass($container);
         $instancesProp = $refContainer->getProperty('instances');
-        $instancesProp->setAccessible(true);
         $instances = $instancesProp->getValue($container);
         if ($this->originalManager !== null) {
             $instances[McpServerManager::class] = $this->originalManager;
@@ -57,7 +54,6 @@ class McpProcessRunnerTest extends TestCase
         // 还原 McpServerManager::$config
         $refManager = new \ReflectionClass(McpServerManager::class);
         $configProp = $refManager->getProperty('config');
-        $configProp->setAccessible(true);
         $configProp->setValue(null, $this->originalConfig);
 
         $this->resetEndpoint();
@@ -68,7 +64,6 @@ class McpProcessRunnerTest extends TestCase
     {
         $ref = new \ReflectionClass(McpProcessRunner::class);
         $prop = $ref->getProperty('endpoint');
-        $prop->setAccessible(true);
         $prop->setValue(null, []);
     }
 
@@ -79,7 +74,6 @@ class McpProcessRunnerTest extends TestCase
     {
         $ref = new \ReflectionClass(McpProcessRunner::class);
         $prop = $ref->getProperty('endpoint');
-        $prop->setAccessible(true);
         $prop->setValue(null, $endpoint);
     }
 
@@ -90,7 +84,6 @@ class McpProcessRunnerTest extends TestCase
     {
         $ref = new \ReflectionClass(McpServerManager::class);
         $configProp = $ref->getProperty('config');
-        $configProp->setAccessible(true);
         $configProp->setValue(null, $config);
     }
 
@@ -224,7 +217,6 @@ class McpProcessRunnerTest extends TestCase
         $container = Container::instance();
         $refContainer = new \ReflectionClass($container);
         $instancesProp = $refContainer->getProperty('instances');
-        $instancesProp->setAccessible(true);
         $instances = $instancesProp->getValue($container);
         $instances[McpServerManager::class] = $fakeManager;
         $instancesProp->setValue($container, $instances);
@@ -296,7 +288,6 @@ class McpProcessRunnerTest extends TestCase
         $container = Container::instance();
         $refContainer = new \ReflectionClass($container);
         $instancesProp = $refContainer->getProperty('instances');
-        $instancesProp->setAccessible(true);
         $instances = $instancesProp->getValue($container);
         $instances[McpServerManager::class] = $fakeManager;
         $instancesProp->setValue($container, $instances);
