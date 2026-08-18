@@ -10,37 +10,6 @@ permissions:
 jobs:
   coverage:
     runs-on: ubuntu-latest
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: webman_mcp_test
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -proot"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=10
-      redis:
-        image: redis:7-alpine
-        ports:
-          - 6379:6379
-        options: >-
-          --health-cmd="redis-cli ping"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=10
-    env:
-      MCP_TEST_DB_HOST: 127.0.0.1
-      MCP_TEST_DB_PORT: 3306
-      MCP_TEST_DB_DATABASE: webman_mcp_test
-      MCP_TEST_DB_USERNAME: root
-      MCP_TEST_DB_PASSWORD: root
-      MCP_TEST_REDIS_HOST: 127.0.0.1
-      MCP_TEST_REDIS_PORT: 6379
-      MCP_TEST_REDIS_DATABASE: 0
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -52,13 +21,20 @@ jobs:
           extensions: pdo_mysql, redis
           coverage: pcov
 
+      - name: Cache Composer dependencies
+        uses: actions/cache@v6
+        with:
+          path: ~/.composer/cache
+          key: php-8.1-composer-locked-${{ hashFiles('composer.lock') }}
+          restore-keys: php-8.1-composer-locked-
+
       - name: Install Composer
         uses: ramsey/composer-install@v4
         with:
           dependency-versions: highest
 
       - name: Tests
-        run: vendor/bin/phpunit --testsuite=unit,console --coverage-clover=coverage.xml
+        run: vendor/bin/phpunit --testsuite=unit --coverage-clover=coverage.xml
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v7

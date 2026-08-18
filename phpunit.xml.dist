@@ -17,5 +17,10 @@
         <include>
             <directory suffix=".php">src</directory>
         </include>
+        <exclude>
+            <directory>src/config</directory>
+            <directory>src/Exception</directory>
+            <file>src/Install.php</file>
+        </exclude>
     </source>
 </phpunit>

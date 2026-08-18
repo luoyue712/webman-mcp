@@ -39,6 +39,13 @@ jobs:
         if: ${{ matrix.extension == 'swow' && (runner.os == 'Windows' || runner.os == 'macOS') }}
         run: sudo pie install swow/swow-extension --skip-enable-extension
 
+      - name: Cache Composer dependencies
+        uses: actions/cache@v6
+        with:
+          path: ~/.composer/cache
+          key: php-${{ matrix.php }}-composer-locked-${{ hashFiles('composer.lock') }}
+          restore-keys: php-${{ matrix.php }}-composer-locked-
+
       - name: Install Composer
         uses: ramsey/composer-install@v4
 
@@ -118,7 +125,13 @@ jobs:
         with:
           dependency-versions: ${{ matrix.dependencies }}
       - name: Tests
-        run: vendor/bin/phpunit --testsuite=unit,console
+        run: vendor/bin/phpunit --testsuite=unit,console --coverage-clover=coverage.xml
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v7
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: false
 
   qa:
     runs-on: ubuntu-latest
