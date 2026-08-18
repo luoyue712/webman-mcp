@@ -1,0 +1,14 @@
+{
+  "prompts": [
+    {
+      "name": "personalized_greeting",
+      "description": "A prompt that returns a personalized greeting",
+      "arguments": [
+        {
+          "name": "userName",
+          "required": true
+        }
+      ]
+    }
+  ]
+}

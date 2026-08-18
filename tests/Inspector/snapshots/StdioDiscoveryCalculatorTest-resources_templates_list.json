@@ -1,0 +1,10 @@
+{
+  "resourceTemplates": [
+    {
+      "name": "get_item_details",
+      "uriTemplate": "item://{itemId}/details",
+      "description": "Item details resource template",
+      "mimeType": "application/json"
+    }
+  ]
+}

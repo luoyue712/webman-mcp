@@ -1,0 +1,31 @@
+{
+  "resources": [
+    {
+      "name": "calculator_config",
+      "uri": "config://calculator/settings",
+      "description": "Current settings for the calculator tool (precision, allow_negative).",
+      "mimeType": "application/json"
+    },
+    {
+      "name": "system_stats",
+      "uri": "stats://system/overview",
+      "description": "Provides current system statistics",
+      "mimeType": "application/json"
+    },
+    {
+      "name": "application_version",
+      "uri": "app://version",
+      "description": "The application version",
+      "mimeType": "text/plain"
+    },
+    {
+      "name": "weather-app",
+      "uri": "ui://weather-app",
+      "description": "Interactive weather dashboard",
+      "mimeType": "text/html;profile=mcp-app",
+      "_meta": {
+        "ui": {}
+      }
+    }
+  ]
+}

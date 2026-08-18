@@ -1,0 +1,41 @@
+{
+  "prompts": [
+    {
+      "name": "test_simple_prompt",
+      "description": "A simple prompt without arguments",
+      "arguments": []
+    },
+    {
+      "name": "test_prompt_with_arguments",
+      "description": "A prompt with required arguments",
+      "arguments": [
+        {
+          "name": "arg1",
+          "description": "First test argument",
+          "required": true
+        },
+        {
+          "name": "arg2",
+          "description": "Second test argument",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "test_prompt_with_embedded_resource",
+      "description": "A prompt that includes an embedded resource",
+      "arguments": [
+        {
+          "name": "resourceUri",
+          "description": "URI of the resource to embed",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "test_prompt_with_image",
+      "description": "A prompt that includes image content",
+      "arguments": []
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "contents": [
+    {
+      "uri": "test://static-text",
+      "mimeType": "text/plain",
+      "text": "This is the content of the static text resource."
+    }
+  ]
+}

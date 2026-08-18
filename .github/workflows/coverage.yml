@@ -52,13 +52,6 @@ jobs:
           extensions: pdo_mysql, redis
           coverage: pcov
 
-      - name: Cache Composer dependencies
-        uses: actions/cache@v6
-        with:
-          path: ~/.composer/cache
-          key: php-8.1-composer-locked-${{ hashFiles('composer.lock') }}
-          restore-keys: php-8.1-composer-locked-
-
       - name: Install Composer
         uses: ramsey/composer-install@v4
         with:
