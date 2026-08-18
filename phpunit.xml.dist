@@ -8,6 +8,7 @@
             <directory>tests/phpunit/server</directory>
             <directory>tests/phpunit/devmcp</directory>
             <directory>tests/phpunit/console</directory>
+            <directory>tests/phpunit/runner</directory>
         </testsuite>
     </testsuites>
 
