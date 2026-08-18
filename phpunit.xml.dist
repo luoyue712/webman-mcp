@@ -7,8 +7,6 @@
         <testsuite name="unit">
             <directory>tests/phpunit/server</directory>
             <directory>tests/phpunit/devmcp</directory>
-        </testsuite>
-        <testsuite name="console">
             <directory>tests/phpunit/console</directory>
         </testsuite>
     </testsuites>
